@@ -1,0 +1,6 @@
+pytest
+python-dotenv[cli]
+pytest-retry
+pytest-vcr
+deepeval
+pytest-asyncio

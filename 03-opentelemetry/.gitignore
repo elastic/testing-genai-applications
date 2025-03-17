@@ -1,0 +1,2 @@
+.env.otel
+docker-compose-elastic.yml

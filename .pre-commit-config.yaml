@@ -1,0 +1,23 @@
+default_language_version:
+  python: python3.12
+repos:
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.11.0
+  hooks:
+    - id: ruff
+      args: [
+        "--fix",
+        "--line-length", "80",
+        "--extend-select=PLC,PLE,Q,A",
+      ]
+    - id: ruff-format
+      args: [
+        "--line-length", "80"
+      ]
+
+- repo: https://github.com/johann-petrak/licenseheaders.git
+  rev: v0.8.8
+  hooks:
+  - id: licenseheaders
+    args: ["-t", ".licenseheaders.tmpl", "-f"]
+    files: '(?:\.py$|(/|^)Dockerfile$|(/|^)docker-compose\.yml$)'

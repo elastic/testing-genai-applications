@@ -1,0 +1,89 @@
+name: test
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.png'
+      - .pre-commit-config.yaml
+      - lychee.toml
+      - Makefile
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
+      - name: 06-http-replay
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          pytest -m vcr --vcr-record=none
+        working-directory: 06-http-replay
+
+  # This runs integration tests, using a local inference server instead of the
+  # OpenAI platform. This lets us test PRs from forks which can't access secrets
+  # like API keys.
+  integration-test:
+    name: "integration-test (${{ matrix.name }})"
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        include:
+          - name: "ollama"
+            port: 11434
+            install: "curl -fsSL https://ollama.com/install.sh | sh"
+            pre_serve: "echo"
+            serve: "ollama serve"
+          - name: "ramalama"
+            port: 8080
+            install: "pip install ramalama"
+            pull: "dotenv run -- sh -c 'ramalama pull ${CHAT_MODEL}'"
+            serve: "dotenv run -- sh -c 'ramalama serve ${CHAT_MODEL}'"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+      - name: Install common dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install 'python-dotenv[cli]'
+          ${{ matrix.install }}
+      - name: Create .env file
+        run: |
+          (cat .env.${{ matrix.name }}; echo; cat .env.otel.console) > .env
+      - name: Start server
+        run: |
+          ${{ matrix.pre_serve }}
+          nohup ${{ matrix.serve }} > server.log 2>&1 &
+          time curl --retry 10 --retry-connrefused --retry-delay 2 -sf http://localhost:${{ matrix.port }} || cat server.log
+      - name: Test model
+        run: dotenv run -- sh -c '${{ matrix.name }} run ${CHAT_MODEL} hello' || cat server.log
+      - name: 05-test
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          pytest || cat ../server.log
+        working-directory: 05-test
+      - name: 06-http-replay
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          pytest -m integration || cat ../server.log
+        working-directory: 06-http-replay
+      - name: 07-eval
+        run: |  # not "-m eval" as the EVAL_MODEL is too big for CI
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          pytest -m integration || cat ../server.log
+        working-directory: 07-eval

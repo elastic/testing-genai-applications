@@ -1,0 +1,34 @@
+##
+## Copyright Elasticsearch B.V. and contributors
+## SPDX-License-Identifier: Apache-2.0
+##
+services:
+  test:
+    container_name: test
+    build:
+      context: .
+      target: test
+    command: -m vcr --vcr-record=none
+
+  integration-test: &default-service
+    container_name: integration-test
+    build:
+      context: .
+      target: test
+    command: -m integration
+    extra_hosts: # send localhost traffic to the docker host, e.g. your laptop
+      - "localhost:host-gateway"
+    volumes:
+      - ../.env:/.env
+
+  eval-test:
+    <<: *default-service
+    container_name: eval-test
+    entrypoint: [ "dotenv",  "-f", "../.env", "run", "--no-override", "--" ]
+    command: [ "sh", "-c", "opentelemetry-instrument pytest -m eval" ]
+
+  main:
+    <<: *default-service
+    container_name: main
+    build:
+      target: main

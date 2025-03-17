@@ -1,0 +1,14 @@
+##
+## Copyright Elasticsearch B.V. and contributors
+## SPDX-License-Identifier: Apache-2.0
+##
+
+services:
+  cli:
+    container_name: cli
+    build:
+      context: .
+    extra_hosts:  # send localhost traffic to the docker host, e.g. your laptop
+      - "localhost:host-gateway"
+    volumes:
+      - ../.env:/.env
