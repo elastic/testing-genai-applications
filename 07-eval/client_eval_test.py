@@ -26,7 +26,7 @@ openai_base_url = os.getenv("OPENAI_BASE_URL")
 eval_model = os.getenv("EVAL_MODEL", "gpt-4o")
 if openai_base_url:  # local model
     KEY_FILE_HANDLER.write_key(KeyValues.LOCAL_MODEL_NAME, eval_model)
-    KEY_FILE_HANDLER.write_key(openai_base_url)
+    KEY_FILE_HANDLER.write_key(KeyValues.LOCAL_MODEL_BASE_URL, openai_base_url)
     KEY_FILE_HANDLER.write_key(KeyValues.USE_LOCAL_MODEL, "YES")
     KEY_FILE_HANDLER.write_key(KeyValues.USE_AZURE_OPENAI, "NO")
     KEY_FILE_HANDLER.write_key(KeyValues.LOCAL_MODEL_FORMAT, "json")
