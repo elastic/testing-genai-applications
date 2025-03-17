@@ -18,7 +18,7 @@ if os.getenv("OTEL_SDK_DISABLED") == "true":
 
 eval_model = os.getenv("EVAL_MODEL", "gpt-4o")
 # until https://github.com/confident-ai/deepeval/issues/1439
-if eval_model != "gpt-40":
+if eval_model != "gpt-4o":
     if os.path.exists(KEY_FILE):
         os.remove(KEY_FILE)
     KEY_FILE_HANDLER.write_key(KeyValues.LOCAL_MODEL_NAME, eval_model)
