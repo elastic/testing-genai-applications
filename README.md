@@ -70,6 +70,15 @@ prerequisites before starting the exercises.
 Docker and Python are required. You'll also need an OpenAI API compatible
 inference platform and an OpenTelemetry collector.
 
+First of all, you need to be in a directory that contains this repository. If
+you haven't yet, you get one like this:
+```bash
+curl -L https://github.com/elastic/testing-genai-applications/archive/refs/heads/main.tar.gz | tar -xz
+cd testing-genai-applications-main
+```
+
+### Python
+
 All examples use the same Python virtual environment. This reduces repetition,
 even if some examples need more dependencies than others.
 
