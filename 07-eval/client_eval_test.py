@@ -11,20 +11,22 @@ from deepeval.constants import KEY_FILE
 from deepeval.key_handler import KEY_FILE_HANDLER, KeyValues
 from deepeval.metrics import AnswerRelevancyMetric, HallucinationMetric
 from deepeval.test_case import LLMTestCase
+from deepeval.models import GPTModel
 from main import message, model
 
 if os.getenv("OTEL_SDK_DISABLED") == "true":
     os.environ["DEEPEVAL_TELEMETRY_OPT_OUT"] = "YES"
 
+# Below writes configuration as file until there's a programmatic way
+# See https://github.com/confident-ai/deepeval/issues/1439
+if os.path.exists(KEY_FILE):
+    os.remove(KEY_FILE)
+
+openai_base_url = os.getenv("OPENAI_BASE_URL")
 eval_model = os.getenv("EVAL_MODEL", "gpt-4o")
-# until https://github.com/confident-ai/deepeval/issues/1439
-if eval_model != "gpt-4o":
-    if os.path.exists(KEY_FILE):
-        os.remove(KEY_FILE)
+if openai_base_url:  # local model
     KEY_FILE_HANDLER.write_key(KeyValues.LOCAL_MODEL_NAME, eval_model)
-    KEY_FILE_HANDLER.write_key(
-        KeyValues.LOCAL_MODEL_BASE_URL, os.environ["OPENAI_BASE_URL"]
-    )
+    KEY_FILE_HANDLER.write_key(openai_base_url)
     KEY_FILE_HANDLER.write_key(KeyValues.USE_LOCAL_MODEL, "YES")
     KEY_FILE_HANDLER.write_key(KeyValues.USE_AZURE_OPENAI, "NO")
     KEY_FILE_HANDLER.write_key(KeyValues.LOCAL_MODEL_FORMAT, "json")
@@ -52,9 +54,11 @@ async def test_chat_eval(traced_test):
         context=["Atlantic Ocean"],
     )
 
+    # Evaluation defaults to use gpt-4o, this allows us to override as desired.
+    eval_llm = GPTModel(model=eval_model)
     metrics = [
-        AnswerRelevancyMetric(threshold=0.7),
-        HallucinationMetric(threshold=0.8),
+        AnswerRelevancyMetric(model=eval_llm, threshold=0.7),
+        HallucinationMetric(model=eval_llm, threshold=0.8),
     ]
 
     failures = await evaluate_metrics(metrics, test_case, actual_output)
