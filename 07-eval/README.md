@@ -57,14 +57,11 @@ pip install -r requirements-dev.txt
 Bootstrap instrumentation:
 ```bash
 edot-bootstrap --action=install
-# TODO(EDOT): remove when > v0.6.1
-pip uninstall -y elastic-opentelemetry-instrumentation-openai
-pip install 'elastic-opentelemetry-instrumentation-openai @ git+https://github.com/elastic/elastic-otel-python-instrumentations.git@main#subdirectory=instrumentation/elastic-opentelemetry-instrumentation-openai'
 ```
 
 Run the test:
 ```bash
-dotenv -f ../.env run --no-override -- sh -c 'pytest -m eval'
+dotenv -f ../.env run --no-override -- sh -c 'opentelemetry-instrument pytest -m eval'
 ```
 
 </details>
