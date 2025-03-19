@@ -77,6 +77,16 @@ curl -L https://github.com/elastic/testing-genai-applications/archive/refs/heads
 cd testing-genai-applications-main
 ```
 
+### Podman
+
+If you are using [Podman](https://podman.io/) to run docker containers, export
+`HOST_IP`. If you don't you'll get this error running exercises:
+> unable to upgrade to tcp, received 500
+
+Here's how to export your `HOST_IP`:
+  * If macOS: `export HOST_IP=$(ipconfig getifaddr en0)`
+  * If Ubuntu: `export HOST_IP=$(hostname -I | awk '{print $1}')`
+
 ### Python
 
 All examples use the same Python virtual environment. This reduces repetition,
@@ -114,7 +124,8 @@ accessing OpenAI models. It requires an API key and may incur usage costs.
 
 To use OpenAI, do the following:
 
-1. Copy [.env.openai](.env.openai) to `.env`
+1. Copy [.env.openai](.env.openai) to a file named `.env`.
+   - `cp .env.openai .env`
 2. Set `OPENAI_API_KEY` in your `.env` file to your [Secret Key](https://platform.openai.com/account/api-keys).
 
 </details>
@@ -130,7 +141,8 @@ To start and use Ollama, do the following:
 1. Ensure `ollama` is installed
    - On macOS/Linux: `brew install ollama`
    - For Windows or otherwise, see the [download page][ollama-dl].
-2. Copy [.env.ollama](.env.ollama) to `.env`
+2. Copy [.env.ollama](.env.ollama) to a file named `.env`.
+   - `cp .env.ollama .env`
 3. In a separate terminal, run `OLLAMA_HOST=0.0.0.0 ollama serve`
    - This accepts OpenAI requests for any model on http://localhost:11434/v1
 4. In this terminal, pull the chat and eval models
@@ -148,7 +160,8 @@ locally. It is free to use, but requires sufficient computational resources.
 1. Make sure `ramalama` is installed
    - On macOS/Linux: `brew install ramalama`
    - For Windows or otherwise, see the [installation guide][ramalama-dl].
-2. Copy [.env.ramalama](.env.ramalama) to `.env`
+2. Copy [.env.ramalama](.env.ramalama) to a file named `.env`.
+   - `cp .env.ramalama .env`
 3. In a separate terminal, run `dotenv run -- sh -c 'ramalama serve ${CHAT_MODEL}'`
    - This accepts OpenAI requests for ${CHAT_MODEL} on http://localhost:8080/v1
 

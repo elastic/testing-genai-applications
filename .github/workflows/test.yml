@@ -11,6 +11,13 @@ on:
       - lychee.toml
       - Makefile
 
+permissions:
+  contents: read
+
+env:
+  # Ensure we can see the server log if an integration test fails.
+  TRAP_PARENT_SERVER_LOG: "trap 'if [ $? -ne 0 ]; then cat ../server.log; fi' ERR"
+
 jobs:
   test:
     runs-on: ubuntu-24.04
@@ -39,26 +46,39 @@ jobs:
       matrix:
         include:
           - name: "ollama"
-            port: 11434
-            install: "curl -fsSL https://ollama.com/install.sh | sh"
             pre_serve: "echo"
             serve: "ollama serve"
+            health: http://127.0.0.1:11434
           - name: "ramalama"
-            port: 8080
-            install: "pip install ramalama"
-            pull: "dotenv run -- sh -c 'ramalama pull ${CHAT_MODEL}'"
-            serve: "dotenv run -- sh -c 'ramalama serve ${CHAT_MODEL}'"
+            pre_serve: "dotenv run -- sh -c 'ramalama pull ${CHAT_MODEL}'"
+            serve: "dotenv run -- sh -c 'ramalama --nocontainer serve ${CHAT_MODEL}'"
+            health: http://127.0.0.1:8080/health
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: 3.12
-      - name: Install common dependencies
+      - name: Install dotenv
         run: |
           python -m pip install --upgrade pip
           pip install 'python-dotenv[cli]'
-          ${{ matrix.install }}
+      - name: Install Ollama
+        if: ${{ matrix.name == 'ollama' }}
+        run: curl -fsSL https://ollama.com/install.sh | sh
+      - name: Install RamaLama
+        if: ${{ matrix.name == 'ramalama' }}
+        # In nocontainer mode, RamaLama runs llama-server processes directly.
+        # We install it from the latest llama.cpp release.
+        run: |
+          pip install ramalama
+          TAG=$(gh release view --repo ggml-org/llama.cpp --json tagName --jq .tagName)
+          gh release download $TAG --repo ggml-org/llama.cpp --pattern "llama-${TAG}-bin-ubuntu-x64.zip" --dir .
+          unzip "llama-${TAG}-bin-ubuntu-x64.zip" -d ${{ github.workspace }}/llama.cpp
+          echo "${{ github.workspace }}/llama.cpp/build/bin" >> $GITHUB_PATH
+          echo "LD_LIBRARY_PATH=${{ github.workspace }}/llama.cpp/build/bin" >> $GITHUB_ENV
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: Create .env file
         run: |
           (cat .env.${{ matrix.name }}; echo; cat .env.otel.console) > .env
@@ -66,24 +86,28 @@ jobs:
         run: |
           ${{ matrix.pre_serve }}
           nohup ${{ matrix.serve }} > server.log 2>&1 &
-          time curl --retry 10 --retry-connrefused --retry-delay 2 -sf http://localhost:${{ matrix.port }} || cat server.log
+          trap 'if [ $? -ne 0 ]; then cat server.log; fi' ERR
+          time curl --retry 10 --retry-connrefused --retry-delay 2 -sf ${{ matrix.health }}
       - name: Test model
         run: dotenv run -- sh -c '${{ matrix.name }} run ${CHAT_MODEL} hello' || cat server.log
       - name: 05-test
         run: |
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
-          pytest || cat ../server.log
+          ${{ env.TRAP_PARENT_SERVER_LOG }}
+          pytest
         working-directory: 05-test
       - name: 06-http-replay
         run: |
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
-          pytest -m integration || cat ../server.log
+          ${{ env.TRAP_PARENT_SERVER_LOG }}
+          pytest -m integration
         working-directory: 06-http-replay
       - name: 07-eval
         run: |  # not "-m eval" as the EVAL_MODEL is too big for CI
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
-          pytest -m integration || cat ../server.log
+          ${{ env.TRAP_PARENT_SERVER_LOG }}
+          pytest -m integration
         working-directory: 07-eval
