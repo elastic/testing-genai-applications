@@ -11,8 +11,8 @@ from deepeval.constants import KEY_FILE
 from deepeval.key_handler import KEY_FILE_HANDLER, KeyValues
 from deepeval.metrics import AnswerRelevancyMetric, HallucinationMetric
 from deepeval.test_case import LLMTestCase
-from deepeval.models import GPTModel
 from main import message, model
+from deepeval.metrics.utils import initialize_model
 
 if os.getenv("OTEL_SDK_DISABLED") == "true":
     os.environ["DEEPEVAL_TELEMETRY_OPT_OUT"] = "YES"
@@ -54,8 +54,8 @@ async def test_chat_eval(traced_test):
         context=["Atlantic Ocean"],
     )
 
-    # Evaluation defaults to use gpt-4o, this allows us to override as desired.
-    eval_llm = GPTModel(model=eval_model)
+    # Avoid the gpt-4o default, as it may have been overridden
+    eval_llm, _ = initialize_model(eval_model)
     metrics = [
         AnswerRelevancyMetric(model=eval_llm, threshold=0.7),
         HallucinationMetric(model=eval_llm, threshold=0.8),

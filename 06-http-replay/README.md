@@ -1,7 +1,8 @@
 # Unit test your application with recorded HTTP responses
 
-This exercise teaches you how to record HTTP traffic from the OpenAI SDK for
-offline unit testing. Recording responses ensures deterministic tests despite
+This exercise shows how to capture HTTP traffic from the OpenAI SDK for offline
+unit testing, using recorded responses. This ensures consistent tests even
+though LLMs are inherently non-deterministic.
 
 [client_test.py](client_test.py) tests a `chat()` function extracted from
 [main.py](main.py), using VCR. [pytest-vcr][pytest-vcr] facilitates recording
