@@ -16,6 +16,7 @@ permissions:
 
 env:
   # Ensure we can see the server log if an integration test fails.
+  TRAP_SERVER_LOG: "trap 'if [ $? -ne 0 ]; then cat server.log; fi' ERR"
   TRAP_PARENT_SERVER_LOG: "trap 'if [ $? -ne 0 ]; then cat ../server.log; fi' ERR"
 
 jobs:
@@ -46,11 +47,11 @@ jobs:
       matrix:
         include:
           - name: "ollama"
-            pre_serve: "echo"
+            pull: "after"  # ollama pulls via the server
             serve: "ollama serve"
             health: http://127.0.0.1:11434
           - name: "ramalama"
-            pre_serve: "dotenv run -- sh -c 'ramalama pull ${CHAT_MODEL}'"
+            pull: "before"  # ramalama pulls directly into cache
             serve: "dotenv run -- sh -c 'ramalama --nocontainer serve ${CHAT_MODEL}'"
             health: http://127.0.0.1:8080/health
     steps:
@@ -59,10 +60,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: 3.12
-      - name: Install dotenv
+      - name: Install dotenv and openai
         run: |
           python -m pip install --upgrade pip
-          pip install 'python-dotenv[cli]'
+          pip install openai 'python-dotenv[cli]'
       - name: Install Ollama
         if: ${{ matrix.name == 'ollama' }}
         run: curl -fsSL https://ollama.com/install.sh | sh
@@ -82,14 +83,22 @@ jobs:
       - name: Create .env file
         run: |
           (cat .env.${{ matrix.name }}; echo; cat .env.otel.console) > .env
+      # Depending on the server, we pull the model before or after it starts.
+      # Regardless, we block on health before proceeding to the next step.
       - name: Start server
         run: |
-          ${{ matrix.pre_serve }}
+          PULL_MODEL="dotenv run -- sh -c '${{ matrix.name }} pull \${CHAT_MODEL}'"
+          if [ "${{ matrix.pull }}" = "before" ]; then eval ${PULL_MODEL}; fi
           nohup ${{ matrix.serve }} > server.log 2>&1 &
-          trap 'if [ $? -ne 0 ]; then cat server.log; fi' ERR
+          ${{ env.TRAP_SERVER_LOG }}
           time curl --retry 10 --retry-connrefused --retry-delay 2 -sf ${{ matrix.health }}
-      - name: Test model
-        run: dotenv run -- sh -c '${{ matrix.name }} run ${CHAT_MODEL} hello' || cat server.log
+          if [ "${{ matrix.pull }}" = "after" ]; then eval ${PULL_MODEL}; fi
+      - name: Smoke test the model using OpenAI
+        run: |  # Use the same command as 01-start, to test the OpenAI base URL.
+          ${{ env.TRAP_SERVER_LOG }}
+          dotenv run -- sh -c 'openai api chat.completions.create \
+            -t 0 -m ${CHAT_MODEL} \
+            --message user "Answer in up to 3 words: Which ocean contains Bouvet Island?"'
       - name: 05-test
         run: |
           pip install -r requirements.txt
