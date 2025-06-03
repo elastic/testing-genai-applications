@@ -143,7 +143,7 @@ To start and use Ollama, do the following:
    - For Windows or otherwise, see the [download page][ollama-dl].
 2. Copy [.env.ollama](.env.ollama) to a file named `.env`.
    - `cp .env.ollama .env`
-3. In a separate terminal, run `OLLAMA_HOST=0.0.0.0 ollama serve`
+3. In a separate terminal, run `OLLAMA_HOST=0.0.0.0 OLLAMA_CONTEXT_LENGTH=8192 ollama serve`
    - This accepts OpenAI requests for any model on http://localhost:11434/v1
 4. In this terminal, pull the chat and eval models
    - `dotenv run -- sh -c 'ollama pull ${CHAT_MODEL}'`
@@ -193,10 +193,11 @@ cat .env.otel.console >> .env
 <details>
 <summary>Elastic Stack</summary>
 
-Elastic Stack is an open-source search platform. Its APM Server is compatible
-with OpenTelemetry Collector; Kibana can visualize logs, metrics and traces.
+Elastic Stack is an open-source search platform. Elastic Distribution of
+OpenTelemetry (EDOT) Collector receives logs, metrics and traces and Kibana
+visualizes them.
 
-To use a local Elastic Stack with APM server, append
+To use a local Elastic Stack with EDOT Collector, append
 [.env.otel.elastic](.env.otel.elastic) to your `.env` file like this:
 ```bash
 cat .env.otel.elastic >> .env
@@ -204,10 +205,10 @@ cat .env.otel.elastic >> .env
 
 #### Local Elastic Stack
 
-Below starts Elasticsearch, Kibana, and APM Server and only requires Docker 
-installed. Before you begin, ensure you have free CPU and memory on your Docker
-host (laptop). Assume 4 cpus and 4GB memory for the containers in the Elastic
-Stack.
+Below starts Elasticsearch, Kibana, and Elastic Distribution of OpenTelemetry
+(EDOT) Collector and only requires Docker installed. Before you begin, ensure
+you have free CPU and memory on your Docker host (laptop). Assume 4 cpus and
+4GB memory for the containers in the Elastic Stack.
 
 First, get a copy of docker-compose-elastic.yml
 ```bash

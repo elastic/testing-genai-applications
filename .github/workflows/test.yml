@@ -25,10 +25,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.12
+      - name: Set up Python 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12
+          python-version: 3.13
 
       - name: 06-http-replay
         run: |
@@ -56,10 +56,10 @@ jobs:
             health: http://127.0.0.1:8080/health
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python 3.12
+      - name: Set up Python 3.13
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12
+          python-version: 3.13
       - name: Install dotenv and openai
         run: |
           python -m pip install --upgrade pip

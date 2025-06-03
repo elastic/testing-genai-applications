@@ -99,7 +99,7 @@ http://localhost:5601/app/apm/traces?rangeFrom=now-15m&rangeTo=now
 
 Here's an example screenshot:
 
-![kibana screenshot](kibana.png)
+![kibana screenshot](kibana.jpg)
 
 ---
 [prev]: ../02-proxy

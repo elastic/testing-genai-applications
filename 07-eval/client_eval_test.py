@@ -11,7 +11,7 @@ from deepeval.constants import KEY_FILE
 from deepeval.key_handler import KEY_FILE_HANDLER, KeyValues
 from deepeval.metrics import AnswerRelevancyMetric, HallucinationMetric
 from deepeval.test_case import LLMTestCase
-from main import message, model
+from main import message
 from deepeval.metrics.utils import initialize_model
 
 if os.getenv("OTEL_SDK_DISABLED") == "true":
@@ -46,7 +46,7 @@ async def evaluate_metrics(metrics, test_case, actual_output):
 @pytest.mark.eval
 @pytest.mark.asyncio
 async def test_chat_eval(traced_test):
-    actual_output = OpenAIClient().chat(model, message)
+    actual_output = OpenAIClient().chat(message)
 
     test_case = LLMTestCase(
         input=message,
