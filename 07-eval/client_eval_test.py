@@ -4,10 +4,11 @@
 #
 import asyncio
 import os
+import shutil
 
 import pytest
 from client import OpenAIClient
-from deepeval.constants import KEY_FILE
+from deepeval.constants import HIDDEN_DIR
 from deepeval.key_handler import KEY_FILE_HANDLER, KeyValues
 from deepeval.metrics import AnswerRelevancyMetric, HallucinationMetric
 from deepeval.test_case import LLMTestCase
@@ -19,11 +20,12 @@ if os.getenv("OTEL_SDK_DISABLED") == "true":
 
 # Below writes configuration as file until there's a programmatic way
 # See https://github.com/confident-ai/deepeval/issues/1439
-if os.path.exists(KEY_FILE):
-    os.remove(KEY_FILE)
+if os.path.exists(HIDDEN_DIR):
+    shutil.rmtree(HIDDEN_DIR, ignore_errors=True)
+os.makedirs(HIDDEN_DIR)
 
 openai_base_url = os.getenv("OPENAI_BASE_URL")
-eval_model = os.getenv("EVAL_MODEL", "gpt-4o")
+eval_model = os.getenv("EVAL_MODEL", "o4-mini")
 if openai_base_url:  # local model
     KEY_FILE_HANDLER.write_key(KeyValues.LOCAL_MODEL_NAME, eval_model)
     KEY_FILE_HANDLER.write_key(KeyValues.LOCAL_MODEL_BASE_URL, openai_base_url)
@@ -54,7 +56,7 @@ async def test_chat_eval(traced_test):
         context=["Atlantic Ocean"],
     )
 
-    # Avoid the gpt-4o default, as it may have been overridden
+    # Avoid the gpt-4o default, as it is too strict on HallucinationMetric
     eval_llm, _ = initialize_model(eval_model)
     metrics = [
         AnswerRelevancyMetric(model=eval_llm, threshold=0.7),
