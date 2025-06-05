@@ -14,6 +14,7 @@ from phoenix.evals import (
 from phoenix.trace import SpanEvaluations
 from phoenix.trace.dsl import SpanQuery
 
+
 def main():
     phoenix_client = px.Client(endpoint="http://localhost:6006")
     eval_model = OpenAIModel(
@@ -47,9 +48,12 @@ def main():
     )
     phoenix_client.log_evaluations(
         SpanEvaluations(eval_name="QA Eval", dataframe=qa_eval),
-        SpanEvaluations(eval_name="Hallucination Eval", dataframe=hallucination_eval),
+        SpanEvaluations(
+            eval_name="Hallucination Eval", dataframe=hallucination_eval
+        ),
     )
     print("Evaluations logged to Phoenix")
+
 
 if __name__ == "__main__":
     main()
