@@ -80,6 +80,9 @@ You can view uploaded traces at http://localhost:6006.
 
 ![span screenshot](span.png)
 
+Arize currently requires its own instrumentation to send structrued Gen AI data
+to Phoenix, so we have two LLM spans, one from EDOT and one from Arize.
+
 Now let's run evals against the trace data.
 
 *Note*: Set `EVAL_MODEL` to a strong model (e.g., `gpt-4o` for OpenAI, or
