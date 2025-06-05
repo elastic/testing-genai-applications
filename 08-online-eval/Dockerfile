@@ -18,11 +18,9 @@ COPY *.py ./
 
 ENTRYPOINT [ "python", "main.py" ]
 
-FROM main AS test
+FROM main AS eval
 
 COPY requirements-dev.txt /tmp
 RUN --mount=type=cache,target=/root/.cache/pip pip install -r /tmp/requirements-dev.txt
-COPY pytest.ini ./
-COPY cassettes ./cassettes
 
-ENTRYPOINT [ "pytest" ]
+ENTRYPOINT [ "python", "run_evals.py" ]

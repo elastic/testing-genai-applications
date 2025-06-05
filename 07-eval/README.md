@@ -2,29 +2,29 @@
 
 This exercise teaches you to evaluate LLM responses for relevancy and
 hallucinations using the LLM-as-a-judge pattern. You’ll test
-`OpenAIClient.chat()` with [DeepEval][deepeval] on:
+`OpenAIClient.chat()` with [Phoenix Evals][phoenix-evals] on:
 > Answer in up to 3 words: Which ocean contains Bouvet Island?
 
 ```mermaid
 sequenceDiagram
     participant Test as client_eval_test.py
     participant Client as OpenAIClient
-    participant DeepEval
+    participant Phoenix Evals
     participant LLM as Evaluation LLM
 
     Test ->> Client: Call chat(model, message)
     activate Client
     Client -->> Test: Return reply
     deactivate Client
-    Test ->> DeepEval: Pass reply, input, context
-    activate DeepEval
-    DeepEval ->> LLM: Request scores for metrics
+    Test ->> Phoenix Evals: Pass reply, input, context
+    activate Phoenix Evals
+    Phoenix Evals ->> LLM: Request scores for metrics
     activate LLM
-    LLM -->> DeepEval: Return scores
+    LLM -->> Phoenix Evals: Return scores
     deactivate LLM
-    DeepEval -->> Test: Return results
-    deactivate DeepEval
-    Test ->> Test: Assert metrics pass
+    Phoenix Evals -->> Test: Return results
+    deactivate Phoenix Evals
+    Test ->> Test: Assert labels match
 ```
 
 ## Running tests
@@ -78,24 +78,28 @@ While this catches obviously bad answers, like "pacific ocean", the keyword
 evaluator would not. That said, we can still improve without putting a human
 in the loop.
 
-[deepeval][deepeval] uses the LLM-as-a-judge pattern to evaluate responses from
+[Phoenix Evals][phoenix-evals] uses the LLM-as-a-judge pattern to evaluate responses from
 the LLM you use in your application. Considering the nuance discussed in
 [exercise 5](../05-test), our goal was answer relevancy and absence of
-hallucination. DeepEval has more metrics than these, but starting basic will
+hallucination. Phoenix Evals has more metrics than these, but starting basic will
 cover our goals and keep costs down.
 
 Here's the relevant code:
 ```python
-test_case = LLMTestCase(
-    input="Answer in up to 3 words: Which ocean contains Bouvet Island?",
-    actual_output=actual_output,
-    context=["Atlantic Ocean"],
-)
+test_case = pd.DataFrame({
+    "input": [message],
+    "output": [actual_output],
+    "reference": ["Atlantic Ocean"],
+})
 
-metrics = [
-    AnswerRelevancyMetric(threshold=0.7), # 70% relevant
-    HallucinationMetric(threshold=0.8), #
-]
+qa_eval, hallucination_eval = run_evals(
+    dataframe=test_case,
+    evaluators=[
+        QAEvaluator(eval_model),
+        HallucinationEvaluator(eval_model),
+    ],
+    provide_explanation=True,
+)
 ```
 
 Under the scenes, this uses a large model (OpenAI's gpt-4o by default), to
@@ -111,59 +115,13 @@ by humans who are expert at geography and the context of the question. Also, a
 human would know that the answer "An ocean name" is incorrect, despite our
 above metrics passing it.
 
-*Note*: DeepEval is not the only choice for programmatic evaluation of LLMs. We
-mainly chose this due to its built-in OpenTelemetry support. We could perform
-similar evaluation using [Ragas][ragas].
-
-## OpenTelemetry
-
-LLM Evaluation failures, especially with LLM-as-a-judge pattern which contains
-multiple steps, is easiest to diagnose with a distributed trace.
-
-This exercise adds instrumentation to `pytest` and enables telemetry in
-`deepeval` to give more context around both the LLM calls being evaluated, as
-well the LLMs used to judge them.
-
-We can use [Elastic Distribution of OpenTelemetry (EDOT) Python][edot-python]
-the same way as we did in [exercise 3](../03-opentelemetry) to trace our eval
-test:
-
-```bash
-dotenv -f ../.env run --no-override -- sh -c 'opentelemetry-instrument pytest -m eval'
-```
-
-If your `OTEL_EXPORTER_OTLP_ENDPOINT` was pointed to an Elastic Distribution of
-OpenTelemetry (EDOT) Collector (e.g. `http://localhost:4318`), you could view
-the evaluation in Kibana:
-
-http://localhost:5601/app/apm/traces?rangeFrom=now-15m&rangeTo=now
-
-![Kibana screenshot](kibana.jpg)
-
-Remember, EDOT Python can export to any OpenTelemetry collector, so if you used
-[otel-tui][otel-tui], it would look like this:
-
-![otel-tui screenshot](otel-tui.jpg)
-
-## LLM Eval Platforms
-
-While our contrived question may have been helpful in learning these concepts,
-most GenAI applications have varied, possibly multi-modal LLM exchanges
-including RAG and agent calls. Even armed with tools like DeepEval or Ragas,
-you may end up in a situation where you need to enlist human evaluators to
-score responses, or take actions on metrics you collect towards stronger models
-or prompts.
-
-When your needs become more sophisticated, you need an LLM evaluation platform.
-For example, [Arize Phoenix][phoenix] and [Langtrace][langtrace] are both open
-source licensed, OpenTelemetry compatible systems. They both have features for
-automated and human evaluations, including UI playgrounds and dashboards. Both
-of these companies share a lot of knowledge, so look at the [Arize][arize-blog]
-and [Langtrace][langtrace-blog] to keep up to date on this topic! 
+*Note*: Phoenix Evals is not the only choice for programmatic evaluation of LLMs.
+We could perform similar evaluation using [deepeval][deepval] or [Ragas][ragas].
 
 ---
 [prev]: ../06-http-replay
 [deepeval]: https://docs.confident-ai.com/
+[phoenix-evals]: https://arize.com/docs/phoenix/evaluation/llm-evals
 [ragas]: https://docs.ragas.io
 [southern-ocean]: https://en.wikipedia.org/wiki/Southern_Ocean
 [edot-python]: https://github.com/elastic/elastic-otel-python
