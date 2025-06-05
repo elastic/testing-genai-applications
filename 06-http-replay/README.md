@@ -77,7 +77,7 @@ The important part is this:
 
 ```python
 class OpenAIClient:
-    def chat(self, model: str, message: str) -> str:
+    def chat(self, message: str) -> str:
       return "TODO: implement"
 ```
 
@@ -92,7 +92,7 @@ HTTP interactions. The `@pytest.mark.vcr` decorator enables recording or replay.
 ```python
 @pytest.mark.vcr
 def test_chat():
-    reply = OpenAIClient().chat(model, message)
+    reply = OpenAIClient().chat(message)
 
     assert "Atlantic Ocean" == reply
 ```
@@ -151,7 +151,7 @@ parameter like this:
 ```python
 @pytest.mark.vcr
 def test_chat(default_openai_env):
-    reply = OpenAIClient().chat(model, message)
+    reply = OpenAIClient().chat(message)
 ```
 
 ## Re-recording cassettes

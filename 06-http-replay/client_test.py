@@ -4,11 +4,11 @@
 #
 import pytest
 from client import OpenAIClient
-from main import message, model
+from main import message
 
 
 @pytest.mark.vcr
 def test_chat(default_openai_env):
-    reply = OpenAIClient().chat(model, message)
+    reply = OpenAIClient().chat(message)
 
     assert "South Atlantic Ocean." == reply

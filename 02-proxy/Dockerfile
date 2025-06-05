@@ -4,7 +4,7 @@
 ##
 
 # Use an alpine image to make the runtime smaller
-FROM python:3.12-alpine
+FROM python:3.13-alpine
 
 RUN --mount=type=cache,target=/root/.cache/pip \
     python -m pip install --upgrade pip && \

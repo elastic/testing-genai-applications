@@ -132,8 +132,9 @@ test:
 dotenv -f ../.env run --no-override -- sh -c 'opentelemetry-instrument pytest -m eval'
 ```
 
-If your `OTEL_EXPORTER_OTLP_ENDPOINT` was pointed to an Elastic APM server
-(e.g. `http://localhost:8200`), you could view the evaluation in Kibana:
+If your `OTEL_EXPORTER_OTLP_ENDPOINT` was pointed to an Elastic Distribution of
+OpenTelemetry (EDOT) Collector (e.g. `http://localhost:4318`), you could view
+the evaluation in Kibana:
 
 http://localhost:5601/app/apm/traces?rangeFrom=now-15m&rangeTo=now
 
