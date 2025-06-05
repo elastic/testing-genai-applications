@@ -118,6 +118,35 @@ above metrics passing it.
 *Note*: Phoenix Evals is not the only choice for programmatic evaluation of LLMs.
 We could perform similar evaluation using [deepeval][deepval] or [Ragas][ragas].
 
+## OpenTelemetry
+
+LLM Evaluation failures, especially with LLM-as-a-judge pattern which contains
+multiple steps, is easiest to diagnose with a distributed trace.
+
+This exercise adds instrumentation to `pytest` to give more context around both the
+LLM calls being evaluated, as well the LLMs used to judge them.
+
+We can use [Elastic Distribution of OpenTelemetry (EDOT) Python][edot-python]
+the same way as we did in [exercise 3](../03-opentelemetry) to trace our eval
+test:
+
+```bash
+dotenv -f ../.env run --no-override -- sh -c 'opentelemetry-instrument pytest -m eval'
+```
+
+If your `OTEL_EXPORTER_OTLP_ENDPOINT` was pointed to an Elastic Distribution of
+OpenTelemetry (EDOT) Collector (e.g. `http://localhost:4318`), you could view
+the evaluation in Kibana:
+
+http://localhost:5601/app/apm/traces?rangeFrom=now-15m&rangeTo=now
+
+![Kibana screenshot](kibana.png)
+
+Remember, EDOT Python can export to any OpenTelemetry collector, so if you used
+[otel-tui][otel-tui], it would look like this:
+
+![otel-tui screenshot](otel-tui.png)
+
 ---
 [prev]: ../06-http-replay
 [deepeval]: https://docs.confident-ai.com/
