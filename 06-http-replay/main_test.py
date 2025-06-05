@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 import pytest
+from main import main
 
 
 # Models can sometimes return irrelevant answers or hallucinate. Retry instead
@@ -10,8 +11,6 @@ import pytest
 @pytest.mark.flaky(reruns=5)
 @pytest.mark.integration
 def test_main(capsys):
-    from main import main
-
     main()
     reply = capsys.readouterr().out.strip()
 
