@@ -18,20 +18,8 @@ from phoenix.evals import (
 )
 
 
-async def evaluate_metrics(metrics, test_case, actual_output):
-    tasks = [metric.a_measure(test_case, False) for metric in metrics]
-    await asyncio.gather(*tasks)
-    failures = [
-        f"{type(metric).__name__} scored {metric.score:.1f}: {actual_output}"
-        for metric in metrics
-        if not metric.success
-    ]
-    return failures
-
-
 @pytest.mark.eval
-@pytest.mark.asyncio
-async def test_chat_eval(traced_test):
+def test_chat_eval(traced_test):
     actual_output = OpenAIClient().chat(message)
 
     test_case = pd.DataFrame(
