@@ -42,7 +42,9 @@ async def test_chat_eval(traced_test):
         }
     )
 
-    eval_model = OpenAIModel(model=os.getenv("EVAL_MODEL", "o4-mini"), temperature=0.0)
+    eval_model = OpenAIModel(
+        model=os.getenv("EVAL_MODEL", "o4-mini"), temperature=0.0
+    )
 
     qa_eval, hallucination_eval = run_evals(
         dataframe=test_case,
