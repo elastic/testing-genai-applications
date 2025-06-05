@@ -1,0 +1,6 @@
+*
+
+!*.py
+!requirements*.txt
+!pytest.ini
+!cassettes/
