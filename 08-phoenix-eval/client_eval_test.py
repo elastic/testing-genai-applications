@@ -17,6 +17,7 @@ from phoenix.evals import (
     run_evals,
 )
 
+
 async def evaluate_metrics(metrics, test_case, actual_output):
     tasks = [metric.a_measure(test_case, False) for metric in metrics]
     await asyncio.gather(*tasks)
@@ -33,11 +34,13 @@ async def evaluate_metrics(metrics, test_case, actual_output):
 async def test_chat_eval(traced_test):
     actual_output = OpenAIClient().chat(message)
 
-    test_case = pd.DataFrame({
-        "input": [message],
-        "output": [actual_output],
-        "reference": ["Atlantic Ocean"],
-    })
+    test_case = pd.DataFrame(
+        {
+            "input": [message],
+            "output": [actual_output],
+            "reference": ["Atlantic Ocean"],
+        }
+    )
 
     eval_model = OpenAIModel(model=os.getenv("EVAL_MODEL", "o4-mini"), temperature=0.0)
 
@@ -51,4 +54,7 @@ async def test_chat_eval(traced_test):
     )
     with assert_all():
         expect(qa_eval["label"][0] == "correct", qa_eval["explanation"][0])
-        expect(hallucination_eval["label"][0] == "factual", hallucination_eval["explanation"][0])
+        expect(
+            hallucination_eval["label"][0] == "factual",
+            hallucination_eval["explanation"][0],
+        )

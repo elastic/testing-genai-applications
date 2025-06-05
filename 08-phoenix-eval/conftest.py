@@ -85,7 +85,5 @@ def pytest_runtest_makereport(item, call):
         },
     )
     span.set_status(
-        Status(
-            status_code=StatusCode.ERROR, description=str(call.excinfo.value)
-        )
+        Status(status_code=StatusCode.ERROR, description=str(call.excinfo.value))
     )
