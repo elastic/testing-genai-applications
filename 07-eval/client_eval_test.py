@@ -2,7 +2,6 @@
 # Copyright Elasticsearch B.V. and contributors
 # SPDX-License-Identifier: Apache-2.0
 #
-import asyncio
 import os
 
 from delayed_assert.delayed_assert import assert_all, expect
