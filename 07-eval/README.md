@@ -87,7 +87,7 @@ cover our goals and keep costs down.
 Here's the relevant code:
 ```python
 test_case = pd.DataFrame({
-    "input": [message],
+    "input": ["Answer in up to 3 words: Which ocean contains Bouvet Island?"],
     "output": [actual_output],
     "reference": ["Atlantic Ocean"],
 })
