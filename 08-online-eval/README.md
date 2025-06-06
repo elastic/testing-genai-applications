@@ -23,7 +23,7 @@ sequenceDiagram
     activate Phoenix
     Phoenix -->> Evals: Return spans
     deactivate Phoenix
-    Evals ->> LLM: Request scores for metrics
+    Evals ->> LLM: Request scores for evaluation
     activate LLM
     LLM -->> Evals: Return scores
     deactivate LLM

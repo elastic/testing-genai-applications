@@ -18,7 +18,7 @@ sequenceDiagram
     deactivate Client
     Test ->> Phoenix Evals: Pass reply, input, context
     activate Phoenix Evals
-    Phoenix Evals ->> LLM: Request scores for metrics
+    Phoenix Evals ->> LLM: Request scores for evaluation
     activate LLM
     LLM -->> Phoenix Evals: Return scores
     deactivate LLM
@@ -81,7 +81,7 @@ in the loop.
 [Phoenix Evals][phoenix-evals] uses the LLM-as-a-judge pattern to evaluate responses from
 the LLM you use in your application. Considering the nuance discussed in
 [exercise 5](../05-test), our goal was answer relevancy and absence of
-hallucination. Phoenix Evals has more metrics than these, but starting basic will
+hallucination. Phoenix Evals has more evaluators than these, but starting basic will
 cover our goals and keep costs down.
 
 Here's the relevant code:
@@ -103,7 +103,7 @@ qa_eval, hallucination_eval = run_evals(
 ```
 
 Under the scenes, this uses a large model (OpenAI's gpt-4o by default), to
-implement the metrics. These models are bigger and more expensive than our
+implement the evaluators. These models are bigger and more expensive than our
 application's model, but provide insight into why certain answers fail:
 * hallucination and irrelevant: "Not Atlantic Ocean"
 * not hallucination but irrelevant: "Not the Pacific"
@@ -113,7 +113,7 @@ Datasets that are used to train LLMs may have historical or nuanced data. For
 example, [Southern Ocean][southern-ocean] could be considered a correct answer
 by humans who are expert at geography and the context of the question. Also, a
 human would know that the answer "An ocean name" is incorrect, despite our
-above metrics passing it.
+above evaluators passing it.
 
 *Note*: Phoenix Evals is not the only choice for programmatic evaluation of LLMs.
 We could perform similar evaluation using [deepeval][deepval] or [Ragas][ragas].
@@ -146,6 +146,25 @@ Remember, EDOT Python can export to any OpenTelemetry collector, so if you used
 [otel-tui][otel-tui], it would look like this:
 
 ![otel-tui screenshot](otel-tui.png)
+
+## LLM Eval Platforms
+
+While our contrived question may have been helpful in learning these concepts,
+most GenAI applications have varied, possibly multi-modal LLM exchanges
+including RAG and agent calls. Even armed with eval scripts,
+you may end up in a situation where you need to enlist human evaluators to
+score responses, or take actions on metrics you collect towards stronger models
+or prompts.
+
+When your needs become more sophisticated, you need an LLM evaluation platform.
+For example, [Arize Phoenix][phoenix] and [Langtrace][langtrace] are both open
+source licensed, OpenTelemetry compatible systems. They both have features for
+automated and human evaluations, including UI playgrounds and dashboards. Both
+of these companies share a lot of knowledge, so look at the [Arize][arize-blog]
+and [Langtrace][langtrace-blog] to keep up to date on this topic! 
+
+In the next section, we will update our eval script to support evals of data
+from a running application using Arize Phoenix.
 
 ---
 [prev]: ../06-http-replay
