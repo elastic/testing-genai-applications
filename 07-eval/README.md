@@ -163,8 +163,8 @@ automated and human evaluations, including UI playgrounds and dashboards. Both
 of these companies share a lot of knowledge, so look at the [Arize][arize-blog]
 and [Langtrace][langtrace-blog] to keep up to date on this topic! 
 
-In the next section, we will update our eval script to support evals of data
-from a running application using Arize Phoenix.
+In the [next section](../08-online-eval/), we will update our eval script to
+support evals of data from a running application using Arize Phoenix.
 
 ---
 [prev]: ../06-http-replay
