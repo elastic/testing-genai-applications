@@ -1,4 +1,5 @@
 openai
 python-dotenv
 elastic-opentelemetry
+opentelemetry-instrumentation-httpx
 openinference-instrumentation-openai

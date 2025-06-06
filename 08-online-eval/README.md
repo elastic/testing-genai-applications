@@ -64,11 +64,6 @@ pip install -r requirements.txt
 pip install -r requirements-dev.txt
 ```
 
-Bootstrap instrumentation:
-```bash
-edot-bootstrap --action=install
-```
-
 Run the test:
 ```bash
 OTEL_METRICS_EXPORTER=none OTEL_LOGS_EXPORTER=none python3 main.py
@@ -79,9 +74,6 @@ OTEL_METRICS_EXPORTER=none OTEL_LOGS_EXPORTER=none python3 main.py
 You can view uploaded traces at http://localhost:6006.
 
 ![span screenshot](span.png)
-
-Arize currently requires its own instrumentation to send structrued Gen AI data
-to Phoenix, so we have two LLM spans, one from EDOT and one from Arize.
 
 Now let's run evals against the trace data.
 
