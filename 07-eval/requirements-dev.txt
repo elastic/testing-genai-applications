@@ -3,5 +3,3 @@ python-dotenv[cli]
 pytest-retry
 pytest-vcr
 arize-phoenix-evals
-pytest-asyncio
-delayed-assert

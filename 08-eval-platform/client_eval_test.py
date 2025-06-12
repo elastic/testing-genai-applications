@@ -17,6 +17,9 @@ from phoenix.evals import (
 )
 
 
+@pytest.mark.skipif(
+    not os.getenv("OPENAI_API_KEY"), reason="OPENAI_API_KEY not set"
+)
 @pytest.mark.eval
 def test_chat_eval(traced_test):
     actual_output = OpenAIClient().chat(message)

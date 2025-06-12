@@ -22,7 +22,7 @@ from phoenix.evals import (
 )
 @pytest.mark.eval
 def test_chat_eval(traced_test):
-    actual_output = OpenAIClient().chat(message)
+    actual_output = OpenAIClient().chat(message).content
 
     test_case = pd.DataFrame(
         {

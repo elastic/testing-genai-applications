@@ -66,6 +66,8 @@ prerequisites before starting the exercises.
   library to evaluate an LLM response on correctness and hallucination.
 8. [Run LLM evaluations on production requests](08-eval-platform): Use Arize
   Phoenix to evaluate LLM responses captured in OpenTelemetry traces.
+9. [Attach user feedback to production requests](09-user-feedback): Use Arize
+  Phoenix to attach user feedback to OpenTelemetry traces.
 
 ## Prerequisites
 

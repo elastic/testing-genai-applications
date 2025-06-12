@@ -8,7 +8,6 @@ teaches you how to write a Python script that asks the same question:
 OpenAI CLI. With a custom script, we can simply call `python3 main.py` instead
 of crafting a long `openai` command.
 
-
 ```mermaid
 sequenceDiagram
     participant User

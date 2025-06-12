@@ -55,7 +55,7 @@ from main import main
 @pytest.mark.integration
 def test_main(capsys):
     main()
-    reply = capsys.readouterr().out.strip()
+    response = capsys.readouterr().out.strip()
 ```
 
 This mark allows us to skip this test later, and requires defining it in
