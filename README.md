@@ -273,7 +273,7 @@ docker run --rm -d --name phoenix -p 6006:6006 -e PHOENIX_ENABLE_AUTH=false ariz
 Or, to run on your host:
 ```bash
 brew install uv
-PHOENIX_ENABLE_AUTH=false uvx phoenix serve
+PHOENIX_ENABLE_AUTH=false uvx arize-phoenix serve
 ```
 
 </details>
