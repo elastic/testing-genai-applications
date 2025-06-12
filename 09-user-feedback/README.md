@@ -3,7 +3,15 @@
 This exercise teaches you how to incorporate human feedback on real LLM
 responses using [Arize Phoenix][phoenix].
 
-Differences from [exercise 4](../04-main) are highlighted below:
+Similar to automated evaluation in the [previous exercise][prev], human
+feedback is captured in OpenTelemetry traces, after the LLM response is
+complete. Health of the application can be derived from LLM or human
+evaluation, or a combination of both.
+
+Human feedback can be recorded without application code changes, in the LLM
+Eval Platform, or in the application itself. This example shows how to capture
+thumbs up or down feedback style feedback in the application. Differences from
+[exercise 4](../04-main) are highlighted below:
 
 ```mermaid
 sequenceDiagram
