@@ -1,30 +1,43 @@
-# Evaluate your application using an LLM as a Judge
+# Evaluate your application using an LLM
 
-This exercise teaches you to evaluate LLM responses for relevancy and
-hallucinations using the LLM-as-a-judge pattern. You’ll test
-`OpenAIClient.chat()` with [Phoenix Evals][phoenix-evals] on:
-> Answer in up to 3 words: Which ocean contains Bouvet Island?
+This exercise teaches you to evaluate LLM responses for correctness and
+factuality via a unit test runner. You'll evaluate an `OpenAIClient.chat()`
+response using the [Phoenix Evals][phoenix-evals] library.
 
 ```mermaid
 sequenceDiagram
     participant Test as client_eval_test.py
     participant Client as OpenAIClient
-    participant Phoenix Evals
+    participant Evals as Phoenix Evals
     participant LLM as Evaluation LLM
 
-    Test ->> Client: Call chat(model, message)
+    Test ->> Client: chat(model, message)
     activate Client
-    Client -->> Test: Return reply
+    Client -->> Test: Return response
     deactivate Client
-    Test ->> Phoenix Evals: Pass reply, input, context
-    activate Phoenix Evals
-    Phoenix Evals ->> LLM: Request scores for evaluation
+
+    Test ->> Evals: Run with message, response and reference answer
+    activate Evals
+
+    Note over Evals: QA Evaluator generates correctness prompt
+    Evals ->> LLM: Pass correctness prompt and valid values of record_response function
+    
     activate LLM
-    LLM -->> Phoenix Evals: Return scores
+    LLM ->> Evals: record_response(explanation, correct|incorrect)
     deactivate LLM
-    Phoenix Evals -->> Test: Return results
-    deactivate Phoenix Evals
-    Test ->> Test: Assert labels match
+
+    Note over Evals: Hallucination Evaluator generates factuality prompt
+    Evals ->> LLM: Pass factuality prompt and valid values of record_response function
+
+    activate LLM
+    LLM ->> Evals: record_response(explanation, hallucinated|factual)
+    deactivate LLM
+
+    Note over Evals: Evaluation results are converted to pandas DataFrames
+    Evals-->>Test: Return responses of QA and Hallucination Evaluators
+    deactivate Evals
+
+    Test->>Test: Assert labels are "correct" AND "factual" or fail with "explanation"
 ```
 
 ## Running tests
@@ -32,8 +45,9 @@ sequenceDiagram
 Run the evaluation test in [client_eval_test.py](client_eval_test.py) with
 `pytest`.
 
-*Note*: Set `EVAL_MODEL` to a strong model (e.g., `gpt-4o` for OpenAI, or
-`deepseek-r1:14b` for local LLMs).
+*Note*: The default `EVAL_MODEL` is set to `o3-mini`. For stronger evaluation,
+consider setting it to a more capable tool capable thinking model (e.g. `o4`
+for OpenAI, or `michaelneale/deepseek-r1-goose` for local LLMs).
 
 <details>
 <summary>Docker</summary>
@@ -46,7 +60,6 @@ docker compose run --build --rm eval-test
 
 <details>
 <summary>Shell</summary>
-
 
 Install dependencies:
 ```bash
@@ -78,11 +91,11 @@ While this catches obviously bad answers, like "pacific ocean", the keyword
 evaluator would not. That said, we can still improve without putting a human
 in the loop.
 
-[Phoenix Evals][phoenix-evals] uses the LLM-as-a-judge pattern to evaluate responses from
-the LLM you use in your application. Considering the nuance discussed in
-[exercise 5](../05-test), our goal was answer relevancy and absence of
-hallucination. Phoenix Evals has more evaluators than these, but starting basic will
-cover our goals and keep costs down.
+[Phoenix Evals][phoenix-evals] uses LLMs to evaluate responses from the LLM
+based on criteria you define. Considering the nuance discussed in
+[exercise 5](../05-test), our goal was answer correctly and without
+hallucination (factually). Phoenix Evals has more evaluators than these, but
+starting basic will cover our goals and keep costs down.
 
 Here's the relevant code:
 ```python
@@ -102,9 +115,10 @@ qa_eval, hallucination_eval = run_evals(
 )
 ```
 
-Under the scenes, this uses a large model (OpenAI's gpt-4o by default), to
-implement the evaluators. These models are bigger and more expensive than our
-application's model, but provide insight into why certain answers fail:
+Under the scenes, this uses a tool capable, thinking model (OpenAI's `o3-mini`
+by default), to implement the evaluators. These models are typically more
+capable than our application's model, but provide insight into why certain
+answers fail:
 * hallucination and irrelevant: "Not Atlantic Ocean"
 * not hallucination but irrelevant: "Not the Pacific"
 
@@ -120,11 +134,11 @@ We could perform similar evaluation using [deepeval][deepval] or [Ragas][ragas].
 
 ## OpenTelemetry
 
-LLM Evaluation failures, especially with LLM-as-a-judge pattern which contains
-multiple steps, is easiest to diagnose with a distributed trace.
+LLM Evaluation failures can be the result of multiple steps, so easier to
+diagnose with a distributed trace.
 
 This exercise adds instrumentation to `pytest` to give more context around both the
-LLM calls being evaluated, as well the LLMs used to judge them.
+LLM calls being evaluated, as well the LLMs used to evaluate them.
 
 We can use [Elastic Distribution of OpenTelemetry (EDOT) Python][edot-python]
 the same way as we did in [exercise 3](../03-opentelemetry) to trace our eval
@@ -151,10 +165,9 @@ Remember, EDOT Python can export to any OpenTelemetry collector, so if you used
 
 While our contrived question may have been helpful in learning these concepts,
 most GenAI applications have varied, possibly multi-modal LLM exchanges
-including RAG and agent calls. Even armed with eval scripts,
-you may end up in a situation where you need to enlist human evaluators to
-score responses, or take actions on metrics you collect towards stronger models
-or prompts.
+including RAG and agent calls. Even armed with eval scripts, you may end up in
+a situation where you need to enlist human evaluators to score responses, or
+take actions on metrics you collect towards stronger models or prompts.
 
 When your needs become more sophisticated, you need an LLM evaluation platform.
 For example, [Arize Phoenix][phoenix] and [Langtrace][langtrace] are both open
@@ -163,11 +176,10 @@ automated and human evaluations, including UI playgrounds and dashboards. Both
 of these companies share a lot of knowledge, so look at the [Arize][arize-blog]
 and [Langtrace][langtrace-blog] to keep up to date on this topic! 
 
-In the [next section](../08-online-eval/), we will update our eval script to
+In the [next section](../08-eval-platform/), we will update our eval script to
 support evals of data from a running application using Arize Phoenix.
 
 ---
-[prev]: ../06-http-replay
 [deepeval]: https://docs.confident-ai.com/
 [phoenix-evals]: https://arize.com/docs/phoenix/evaluation/llm-evals
 [ragas]: https://docs.ragas.io

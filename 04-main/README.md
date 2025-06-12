@@ -5,7 +5,7 @@ teaches you how to write a Python script that asks the same question:
 > Answer in up to 3 words: Which ocean contains Bouvet Island?
 
 [main.py](main.py) uses the same [OpenAI Python SDK][openai-python] as the
-OpenAI CLI. With a custom script, we can simply call `python main.py` instead
+OpenAI CLI. With a custom script, we can simply call `python3 main.py` instead
 of crafting a long `openai` command.
 
 
@@ -26,11 +26,12 @@ sequenceDiagram
     Main ->> User: Print completion
     deactivate Main
     Note over Main,Collector: Asynchronous Export
-    Main ->> Collector: Export telemetry data via gRPC
+    Main ->> Collector: Export telemetry data via HTTP
     activate Collector
     Collector -->> Main: Acknowledgement
     deactivate Collector
 ```
+
 ## Running main.py
 
 Choose one of the following ways to run [main.py](main.py).
@@ -62,9 +63,9 @@ edot-bootstrap --action=install
 
 Now, run [main.py](main.py) with or without OpenTelemetry.
 ```bash
-python main.py
+python3 main.py
 # or to opt-out of OpenTelemetry
-OTEL_SDK_DISABLED=true python main.py
+OTEL_SDK_DISABLED=true python3 main.py
 ```
 
 </details>

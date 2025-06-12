@@ -62,7 +62,7 @@ jobs:
           python-version: 3.13
       - name: Install dotenv and openai
         run: |
-          python -m pip install --upgrade pip
+          python3 -m pip install --upgrade pip
           pip install openai 'python-dotenv[cli]'
       - name: Install Ollama
         if: ${{ matrix.name == 'ollama' }}
@@ -120,10 +120,10 @@ jobs:
           ${{ env.TRAP_PARENT_SERVER_LOG }}
           pytest -m integration
         working-directory: 07-eval
-      - name: 08-online-eval
+      - name: 08-eval-job
         run: |
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
           ${{ env.TRAP_PARENT_SERVER_LOG }}
           pytest -m integration
-        working-directory: 08-online-eval
+        working-directory: 08-eval-job

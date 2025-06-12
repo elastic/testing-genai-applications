@@ -16,7 +16,7 @@ RUN --mount=type=cache,target=/root/.cache/pip edot-bootstrap --action=install
 WORKDIR /app
 COPY *.py ./
 
-ENTRYPOINT [ "python", "main.py" ]
+ENTRYPOINT [ "python3", "main.py" ]
 
 FROM main AS test
 

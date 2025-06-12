@@ -35,7 +35,7 @@ sequenceDiagram
     CLI ->> User: Display JSON response
     deactivate CLI
     Note over CLI,Collector: Asynchronous Export
-    CLI ->> Collector: Export telemetry data via gRPC
+    CLI ->> Collector: Export telemetry data via HTTP
     activate Collector
     Collector -->> CLI: Acknowledgement
     deactivate Collector

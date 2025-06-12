@@ -16,4 +16,4 @@ RUN --mount=type=cache,target=/root/.cache/pip edot-bootstrap --action=install
 WORKDIR /app
 COPY *.py ./
 
-CMD [ "python", "main.py" ]
+CMD [ "python3", "main.py" ]
