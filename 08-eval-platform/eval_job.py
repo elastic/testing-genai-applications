@@ -7,6 +7,8 @@ Queries Phoenix for spans within the last minute. Computes and logs evaluations
 back to Phoenix. This script is intended to run once a minute as a cron job.
 """
 
+import os
+
 import phoenix as px
 from phoenix.evals import (
     HallucinationEvaluator,
@@ -14,16 +16,32 @@ from phoenix.evals import (
     OpenAIModel,
     run_evals,
 )
+from dotenv import load_dotenv
+from opentelemetry.instrumentation import auto_instrumentation
+
 from phoenix.trace import SpanEvaluations
 from phoenix.trace.dsl import SpanQuery
 
 
 def main():
-    phoenix_client = px.Client(endpoint="http://localhost:6006")
+    # Load environment variables used by OpenTelemetry and Phoenix
+    load_dotenv(dotenv_path="../.env", override=False)
+
+    # Auto-instrument this file for OpenTelemetry logs, metrics and traces.
+    # You can opt out by setting the ENV variable `OTEL_SDK_DISABLED=true`.
+    auto_instrumentation.initialize()
+
+    # Phoenix is also our otel collector, so re-use the ENV variable
+    phoenix_client = px.Client(
+        endpoint=os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
+    )
     eval_model = OpenAIModel(
-        model="gpt-4o",
+        model=os.getenv("EVAL_MODEL", "o3-mini"), temperature=0.0
     )
 
+    # Lookup LLM spans missing evals. A real job would be more specific in the
+    # query and look up reference answers vs hard-coding one.
+    reference = "Atlantic Ocean"
     query = (
         SpanQuery()
         .where(
@@ -34,21 +52,24 @@ def main():
             output="llm.output_messages",
         )
     )
-    trace_df = phoenix_client.query_spans(query)
-    if trace_df.empty:
+    traces = phoenix_client.query_spans(query)
+    if traces.empty:
         print("No spans found for evaluation.")
         return
 
-    trace_df["reference"] = "Atlantic Ocean"
-
+    # All traces are evaluated against the same reference
+    traces["reference"] = reference
     qa_eval, hallucination_eval = run_evals(
-        dataframe=trace_df,
+        dataframe=traces,
         evaluators=[
             QAEvaluator(eval_model),
             HallucinationEvaluator(eval_model),
         ],
         provide_explanation=True,
     )
+
+    # Attach the eval response, regardless of pass or fail to the trace. This
+    # ensures we don't redundantly process the same trace later.
     phoenix_client.log_evaluations(
         SpanEvaluations(eval_name="QA Eval", dataframe=qa_eval),
         SpanEvaluations(

@@ -19,8 +19,8 @@ def main():
     auto_instrumentation.initialize()
 
     client = OpenAIClient()
-    reply = client.chat(message=message)
-    print(reply)
+    response = client.chat(message=message)
+    print(response)
 
 
 if __name__ == "__main__":

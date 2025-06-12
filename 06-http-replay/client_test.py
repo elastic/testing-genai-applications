@@ -9,6 +9,6 @@ from main import message
 
 @pytest.mark.vcr
 def test_chat(default_openai_env):
-    reply = OpenAIClient().chat(message)
+    response = OpenAIClient().chat(message)
 
-    assert "South Atlantic Ocean." == reply
+    assert "South Atlantic Ocean." == response

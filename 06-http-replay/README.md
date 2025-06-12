@@ -30,9 +30,9 @@ sequenceDiagram
     end
     VCR -->> Client: Response
     deactivate VCR
-    Client -->> Test: Return reply
+    Client -->> Test: Return response
     deactivate Client
-    Test ->> Test: Assert reply
+    Test ->> Test: Assert response
 ```
 
 ## Running tests
@@ -92,9 +92,9 @@ HTTP interactions. The `@pytest.mark.vcr` decorator enables recording or replay.
 ```python
 @pytest.mark.vcr
 def test_chat():
-    reply = OpenAIClient().chat(message)
+    response = OpenAIClient().chat(message)
 
-    assert "Atlantic Ocean" == reply
+    assert "Atlantic Ocean" == response
 ```
 
 ## Why record API responses for replay?
@@ -151,7 +151,7 @@ parameter like this:
 ```python
 @pytest.mark.vcr
 def test_chat(default_openai_env):
-    reply = OpenAIClient().chat(message)
+    response = OpenAIClient().chat(message)
 ```
 
 ## Re-recording cassettes

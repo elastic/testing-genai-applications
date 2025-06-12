@@ -62,8 +62,10 @@ prerequisites before starting the exercises.
   for variability or hallucinations in the LLM's response.
 6. [Unit test your application with recorded HTTP responses](06-http-replay):
   Record traffic from the OpenAI SDK, so that you can run unit tests offline.
-7. [Evaluate your application using an LLM as a Judge](07-eval): Use
-  DeepEval to score relevancy or hallucinations in your LLM responses.
+7. [Evaluate your application using an LLM](07-eval): Use the Phoenix Evals
+  library to evaluate an LLM response on correctness and hallucination.
+8. [Run LLM evaluations on production requests](08-eval-platform): Use Arize
+  Phoenix to evaluate LLM responses captured in OpenTelemetry traces.
 
 ## Prerequisites
 
@@ -242,7 +244,7 @@ Choose one of the following ways to run `otel-tui` in a separate terminal.
 
 To run in docker:
 ```bash
-docker run --rm -it --name otel-tui ymtdzzz/otel-tui:latest
+docker run --rm -it --name otel-tui -p 4318:4318 ymtdzzz/otel-tui:latest
 ```
 
 Or, to run on your host:
@@ -254,7 +256,30 @@ otel-tui
 
 </details>
 
+<details>
+<summary>Arize Phoenix</summary>
+
+[Arize Phoenix][phoenix] is an OpenTelemetry compatible AI Observability and
+Evaluation tool.
+
+Choose one of the following ways to run `phoenix` in the background, with
+authentication disabled.
+
+To run in docker:
+```bash
+docker run --rm -d --name phoenix -p 6006:6006 -e PHOENIX_ENABLE_AUTH=false arizephoenix/phoenix:latest
+```
+
+Or, to run on your host:
+```bash
+brew install uv
+PHOENIX_ENABLE_AUTH=false phoenix serve
+```
+
+</details>
+
 ---
 [ollama-dl]: https://ollama.com/download
 [ramalama-dl]: https://github.com/containers/ramalama?tab=readme-ov-file#install
 [otel-tui]: https://github.com/ymtdzzz/otel-tui
+[phoenix]: https://arize.com/docs/phoenix
