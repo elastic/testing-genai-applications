@@ -37,12 +37,14 @@ class OpenAIClient:
         self.model = model or os.getenv("CHAT_MODEL", "gpt-4o-mini")
 
     def chat(self, message: str) -> ChatResponse:
-        messages = _SpanIDCapturingList([
-            {
-                "role": "user",
-                "content": message,
-            },
-        ])
+        messages = _SpanIDCapturingList(
+            [
+                {
+                    "role": "user",
+                    "content": message,
+                },
+            ]
+        )
         response = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
