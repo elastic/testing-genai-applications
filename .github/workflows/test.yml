@@ -120,10 +120,10 @@ jobs:
           ${{ env.TRAP_PARENT_SERVER_LOG }}
           pytest -m integration
         working-directory: 07-eval
-      - name: 08-eval-job
+      - name: 08-eval-platform
         run: |
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
           ${{ env.TRAP_PARENT_SERVER_LOG }}
           pytest -m integration
-        working-directory: 08-eval-job
+        working-directory: 08-eval-platform
