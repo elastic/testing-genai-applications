@@ -43,6 +43,14 @@ def vcr_config():
 
 
 @pytest.fixture
+def vcr_cassette_name(request):
+    test_name = request.node.name
+    if test_name == "test_chat_with_span_id":
+        return "test_chat"
+    return test_name
+
+
+@pytest.fixture
 def traced_test(request):
     tracer = trace.get_tracer(__name__)
     span = tracer.start_span(request.node.name)

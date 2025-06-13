@@ -108,25 +108,19 @@ challenge is to attach user feedback to the correct OpenTelemetry span: A real
 application trace often has spans unrelated to LLMs (like database queries).
 
 The OpenAI Python SDK lacks a callback API to capture OpenTelemetry span IDs
-during requests. To work around this, we wrap the message list in a custom
-`_SpanIDCapturingList`. This captures the span ID during the OpenAI request,
-when the trace span is active
+during requests. To work around this, we monkey patch a function called
+internally by the OpenAI Python SDK when doing a chat completion request.
+This ensures feedback is connected to the `ChatCompletion` span, vs its parent
+or its child.
 
 The critical code related to this is in [client.py](client.py):
 
 ```python
-messages = _SpanIDCapturingList([
-    {
-        "role": "user",
-        "content": message,
-    },
-])
-response = self.client.chat.completions.create(
-    model=self.model,
-    messages=messages,
-)
-content = response.choices[0].message.content
-return ChatResponse(content, messages.span_id)
+# build_request is called inside chat.completions, before the real HTTP request
+def span_id_capturing_build_request(self, *args, **kwargs):
+    ctx = trace.get_current_span().get_span_context()
+    span_id_var.set(ctx.span_id)
+    return original_build_request(self, *args, **kwargs)
 ```
 
 ## Offline unit tests
