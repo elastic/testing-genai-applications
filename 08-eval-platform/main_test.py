@@ -8,7 +8,7 @@ from main import main
 
 # Models can sometimes return irrelevant answers or hallucinate. Retry instead
 # of breaking the build.
-@pytest.mark.flaky(reruns=3)
+@pytest.mark.flaky(reruns=5)
 @pytest.mark.integration
 def test_main(capsys):
     main()

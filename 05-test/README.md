@@ -82,12 +82,12 @@ assert "atlantic" in reply.lower()
 ## Hallucination
 
 Small LLMs may hallucinate (e.g., wrong ocean). For now,
-[pytest-rerunfailures][pytest-rerunfailures] reruns the test up to 3 times.
+[pytest-rerunfailures][pytest-rerunfailures] reruns the test up to 5 times.
 Later exercises explore robust hallucination handling
 
 ```python
 # Tiny models can sometime hallucinate, so retry a few times
-@pytest.mark.flaky(reruns=3)
+@pytest.mark.flaky(reruns=5)
 def test_main(capsys):
 ```
 
