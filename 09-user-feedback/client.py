@@ -51,6 +51,7 @@ class OpenAIClient:
         response = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
+            temperature=0,
         )
         content = response.choices[0].message.content
         return ChatResponse(content, span_id_var.get())

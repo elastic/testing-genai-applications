@@ -18,6 +18,16 @@ def default_openai_env(monkeypatch):
         monkeypatch.setenv("OPENAI_API_KEY", "test_openai_api_key")
 
 
+@pytest.fixture
+def default_otlp_env(monkeypatch):
+    """Prevent offline tests from failing due to 127.0.0.1 vs localhost."""
+
+    if "OTEL_EXPORTER_OTLP_ENDPOINT" not in os.environ:
+        monkeypatch.setenv(
+            "OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:6006"
+        )
+
+
 @pytest.fixture(scope="module")
 def vcr_config():
     """Scrub sensitive headers and gunzip responses so they are readable"""

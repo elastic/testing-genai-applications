@@ -13,11 +13,11 @@ interactions:
       content-type:
       - application/json
       host:
-      - 127.0.0.1:6006
+      - localhost:6006
       user-agent:
       - python-httpx/0.28.1
     method: POST
-    uri: http://127.0.0.1:6006/v1/span_annotations
+    uri: http://localhost:6006/v1/span_annotations
   response:
     body:
       string: '{"data":[]}'
@@ -29,7 +29,7 @@ interactions:
       content-type:
       - application/json
       date:
-      - Thu, 12 Jun 2025 11:54:14 GMT
+      - Fri, 13 Jun 2025 02:04:37 GMT
       server:
       - uvicorn
       vary:
