@@ -1,5 +1,5 @@
 pytest
 python-dotenv[cli]
-pytest-retry
+pytest-rerunfailures
 pytest-vcr
 arize-phoenix-evals
