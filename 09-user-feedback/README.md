@@ -42,7 +42,7 @@ sequenceDiagram
         activate User
         User ->> Main: y
         deactivate User
-        Note over Main,Phoenix: Asynchronous Trace Export
+        Note over Main,Phoenix: Asynchronous User Feedback Export
         Main ->> Phoenix: Annotate span ID with user feedback
         activate Phoenix
         Phoenix -->> Main: Acknowledgement
