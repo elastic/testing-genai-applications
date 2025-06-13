@@ -11,6 +11,8 @@ RUN --mount=type=cache,target=/root/.cache/pip python -m pip install --upgrade p
 COPY requirements.txt /tmp
 RUN --mount=type=cache,target=/root/.cache/pip pip install -r /tmp/requirements.txt
 RUN --mount=type=cache,target=/root/.cache/pip edot-bootstrap --action=install
+# Remove redundant instrumentation for OpenAI, as we use OpenInference
+RUN pip uninstall -y elastic-opentelemetry-instrumentation-openai
 
 # main.py looks for ../.env, so switch to a subdirectory
 WORKDIR /app
