@@ -1,7 +1,7 @@
 interactions:
 - request:
     body: '{"messages":[{"role":"user","content":"Answer in up to 3 words: Which ocean
-      contains Bouvet Island?"}],"model":"gpt-4o-mini"}'
+      contains Bouvet Island?"}],"model":"gpt-4o-mini","temperature":0}'
     headers:
       accept:
       - application/json
@@ -10,13 +10,13 @@ interactions:
       connection:
       - keep-alive
       content-length:
-      - '125'
+      - '141'
       content-type:
       - application/json
       host:
       - api.openai.com
       user-agent:
-      - OpenAI/Python 1.66.3
+      - OpenAI/Python 1.86.0
       x-stainless-arch:
       - arm64
       x-stainless-async:
@@ -26,7 +26,7 @@ interactions:
       x-stainless-os:
       - MacOS
       x-stainless-package-version:
-      - 1.66.3
+      - 1.86.0
       x-stainless-read-timeout:
       - '600'
       x-stainless-retry-count:
@@ -34,31 +34,31 @@ interactions:
       x-stainless-runtime:
       - CPython
       x-stainless-runtime-version:
-      - 3.12.9
+      - 3.12.8
     method: POST
     uri: https://api.openai.com/v1/chat/completions
   response:
     body:
-      string: "{\n  \"id\": \"chatcmpl-BBFtuQpl7Hgn0P0EUtbCuhweU21eI\",\n  \"object\":
-        \"chat.completion\",\n  \"created\": 1742022430,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+      string: "{\n  \"id\": \"chatcmpl-Bhnzd4Uyr0gMcipDLnjci0gM2PmBi\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1749779977,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
         \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
         \"assistant\",\n        \"content\": \"South Atlantic Ocean.\",\n        \"refusal\":
         null,\n        \"annotations\": []\n      },\n      \"logprobs\": null,\n
         \     \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\":
-        22,\n    \"completion_tokens\": 5,\n    \"total_tokens\": 27,\n    \"prompt_tokens_details\":
+        22,\n    \"completion_tokens\": 4,\n    \"total_tokens\": 26,\n    \"prompt_tokens_details\":
         {\n      \"cached_tokens\": 0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
         {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
         0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
-        \"default\",\n  \"system_fingerprint\": \"fp_06737a9306\"\n}\n"
+        \"default\",\n  \"system_fingerprint\": \"fp_62a23a81ef\"\n}\n"
     headers:
       CF-RAY:
-      - 920a2c1d8a7435fe-FRA
+      - 94edfd59bff5a476-KUL
       Connection:
       - keep-alive
       Content-Type:
       - application/json
       Date:
-      - Sat, 15 Mar 2025 07:07:12 GMT
+      - Fri, 13 Jun 2025 01:59:38 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -74,11 +74,13 @@ interactions:
       content-length:
       - '827'
       openai-processing-ms:
-      - '1553'
+      - '274'
       openai-version:
       - '2020-10-01'
       strict-transport-security:
       - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '279'
       x-ratelimit-limit-requests:
       - '10000'
       x-ratelimit-limit-tokens:
@@ -86,13 +88,13 @@ interactions:
       x-ratelimit-remaining-requests:
       - '9999'
       x-ratelimit-remaining-tokens:
-      - '199967'
+      - '199982'
       x-ratelimit-reset-requests:
       - 8.64s
       x-ratelimit-reset-tokens:
-      - 9ms
+      - 5ms
       x-request-id:
-      - req_a1679f09f567dba63e30c8a0b3dfab2e
+      - req_1814bca4ff481612edc47877bae70b5d
     status:
       code: 200
       message: OK
