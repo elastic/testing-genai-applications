@@ -127,3 +127,10 @@ jobs:
           ${{ env.TRAP_PARENT_SERVER_LOG }}
           pytest -m integration
         working-directory: 08-eval-platform
+      - name: 09-user-feedback
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+          ${{ env.TRAP_PARENT_SERVER_LOG }}
+          pytest -m integration
+        working-directory: 09-user-feedback
