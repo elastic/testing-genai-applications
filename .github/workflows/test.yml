@@ -66,7 +66,7 @@ jobs:
           pip install openai 'python-dotenv[cli]'
       - name: Install Ollama
         if: ${{ matrix.name == 'ollama' }}
-        run: curl -fsSL https://ollama.com/install.sh | sh
+        run: brew install ollama
       - name: Install RamaLama
         if: ${{ matrix.name == 'ramalama' }}
         # In nocontainer mode, RamaLama runs llama-server processes directly.
