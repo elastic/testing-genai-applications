@@ -15,12 +15,12 @@ sequenceDiagram
     participant LLM as Evaluation LLM
 
     rect rgb(191, 223, 255)
-        Job ->> Client: Query traces missing QA and Hallucination evals
+        Job ->> Client: Query for spans missing QA and Hallucination evals
         activate Client
-        Client -->> Job: Return traces
+        Client -->> Job: Return spans
         deactivate Client
     
-        Note over Job: Below flow happens for each trace missing evals
+        Note over Job: Below flow happens for each span missing evals
     end
     Job ->> Evals: Run with real message, response and reference answer
     activate Evals
@@ -45,10 +45,9 @@ sequenceDiagram
 
     rect rgb(191, 223, 255)
         Note over Job: Technically, this function is "log_evaluations"
-        Job ->> Client: Annotate trace with missing QA and Hallucination evals
+        Job ->> Client: Annotate span with missing QA and Hallucination evals
     end
 ```
-
 
 ## Ensure you are using Phoenix
 
@@ -83,7 +82,11 @@ So, first replace OpenAI OpenTelemetry instrumentation with
 [OpenInference][openinference] like this:
 ```bash
 pip uninstall -y elastic-opentelemetry-instrumentation-openai
-pip install openinference-instrumentation-openai
+```
+
+Then, install the new requirements like so:
+```bash
+pip install -r requirements.txt
 ```
 
 Now, run [main.py](main.py).

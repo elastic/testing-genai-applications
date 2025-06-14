@@ -30,7 +30,7 @@ this case we don't need the `dotenv` CLI, since we are using it as a library.
 pip install -r requirements.txt
 ```
 
-Then, install [pytest][pytest] and [pytest-retry][pytest-retry], which we've
+Then, install [pytest][pytest] and [pytest-rerunfailures][pytest-rerunfailures], which we've
 added to [requirements-dev.txt](requirements-dev.txt).
 ```bash
 pip install -r requirements-dev.txt
@@ -55,7 +55,7 @@ from main import main
 @pytest.mark.integration
 def test_main(capsys):
     main()
-    reply = capsys.readouterr().out.strip()
+    response = capsys.readouterr().out.strip()
 ```
 
 This mark allows us to skip this test later, and requires defining it in
@@ -82,8 +82,8 @@ assert "atlantic" in reply.lower()
 ## Hallucination
 
 Small LLMs may hallucinate (e.g., wrong ocean). For now,
-[pytest-retry][pytest-retry] reruns the test up to 3 times. Later exercises
-explore robust hallucination handling
+[pytest-rerunfailures][pytest-rerunfailures] reruns the test up to 5 times.
+Later exercises explore robust hallucination handling
 
 ```python
 # Tiny models can sometime hallucinate, so retry a few times
@@ -94,4 +94,4 @@ def test_main(capsys):
 ---
 [prev]: ../04-main
 [pytest]: https://docs.pytest.org
-[pytest-retry]: https://github.com/str0zzapreti/pytest-retry
+[pytest-rerunfailures]: https://github.com/pytest-dev/pytest-rerunfailures

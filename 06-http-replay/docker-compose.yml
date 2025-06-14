@@ -8,7 +8,7 @@ services:
     build:
       context: .
       target: test
-    command: -m vcr --vcr-record=none
+    command: -m "not integration" --vcr-record=none
 
   integration-test: &default-service
     container_name: integration-test
