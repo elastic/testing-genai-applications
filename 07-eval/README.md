@@ -1,8 +1,17 @@
-# Evaluate your application using an LLM
+# Unit test driven evaluation of LLMs
 
-This exercise teaches you to evaluate LLM responses for correctness and
-factuality via a unit test runner. You'll evaluate an `OpenAIClient.chat()`
-response using the [Phoenix Evals][phoenix-evals] library.
+This exercise teaches you to evaluate LLM responses in unit tests, using the
+[Phoenix Evals][phoenix-evals] library in Pytest.
+
+We'll use two evaluation methods:
+ * **Generic** or foundation: This leverages off-the-shelf evaluators like
+   Hallucination and Q/A.
+ * **Application-specific**: This implies a bespoke evaluator, written to
+   cover common errors in your application.
+
+By showing both, you can see how to approach LLM quality from either or both
+angles. Doing this in pytest ensures you have rapid feedback close to the code
+using the LLM.
 
 ```mermaid
 sequenceDiagram
@@ -32,12 +41,19 @@ sequenceDiagram
     activate LLM
     LLM ->> Evals: record_response(explanation, hallucinated|factual)
     deactivate LLM
+    
+    Note over Evals: Ocean Evaluator generates prompt
+    Evals ->> LLM: Pass ocean prompt and valid values of record_response function
+
+    activate LLM
+    LLM ->> Evals: record_response(explanation, correct|incorrect)
+    deactivate LLM
 
     Note over Evals: Evaluation results are converted to pandas DataFrames
     Evals-->>Test: Return responses of QA and Hallucination Evaluators
     deactivate Evals
 
-    Test->>Test: Assert labels are "correct" AND "factual" or fail with "explanation"
+    Test->>Test: Assert labels are expected or fail with "explanation"
 ```
 
 ## Running tests
@@ -97,7 +113,7 @@ based on criteria you define. Considering the nuance discussed in
 hallucination (factually). Phoenix Evals has more evaluators than these, but
 starting basic will cover our goals and keep costs down.
 
-Here's the relevant code:
+Here's the relevant code for running built-in evaluators:
 ```python
 test_case = pd.DataFrame({
     "input": ["Answer in up to 3 words: Which ocean contains Bouvet Island?"],
@@ -122,12 +138,23 @@ answers fail:
 * hallucination and irrelevant: "Not Atlantic Ocean"
 * not hallucination but irrelevant: "Not the Pacific"
 
+Built-in evaluators are sometimes known as **Generic** evaluators. These are
+re-usable, which makes them attractive. However, failures are not necessarily
+related to business metrics, and can be confusing to interpret.
+
 Note, this is still imperfect: LLM evaluation is its own area of expertise.
 Datasets that are used to train LLMs may have historical or nuanced data. For
 example, [Southern Ocean][southern-ocean] could be considered a correct answer
 by humans who are expert at geography and the context of the question. Also, a
 human would know that the answer "An ocean name" is incorrect, despite our
 above evaluators passing it.
+ 
+Error analysis is considered a **Application-specific** approach which results in a
+classification of common errors your application must prevent.
+
+[OceanEvaluator](ocean_evaluator.py) is an example of a Application-specific evaluator,
+made due to common errors such as incorrect ocean name, or marking a valid
+answer like "South Atlantic Ocean" as incorrect.
 
 *Note*: Phoenix Evals is not the only choice for programmatic evaluation of LLMs.
 We could perform similar evaluation using [deepeval][deepval] or [Ragas][ragas].
@@ -154,12 +181,12 @@ the evaluation in Kibana:
 
 http://localhost:5601/app/apm/traces?rangeFrom=now-15m&rangeTo=now
 
-![Kibana screenshot](kibana.png)
+![Kibana screenshot](kibana.jpg)
 
 Remember, EDOT Python can export to any OpenTelemetry collector, so if you used
 [otel-tui][otel-tui], it would look like this:
 
-![otel-tui screenshot](otel-tui.png)
+![otel-tui screenshot](otel-tui.jpg)
 
 ## LLM Eval Platforms
 

@@ -17,19 +17,18 @@ from phoenix.evals import (
     run_evals,
 )
 from dotenv import load_dotenv
-from opentelemetry.instrumentation import auto_instrumentation
+from ocean_evaluator import OceanEvaluator
 
 from phoenix.trace import SpanEvaluations
 from phoenix.trace.dsl import SpanQuery
 
 
 def main():
-    # Load environment variables used by OpenTelemetry and Phoenix
+    # Load environment variables used by Phoenix
     load_dotenv(dotenv_path="../.env", override=False)
 
-    # Auto-instrument this file for OpenTelemetry logs, metrics and traces.
-    # You can opt out by setting the ENV variable `OTEL_SDK_DISABLED=true`.
-    auto_instrumentation.initialize()
+    # Note: We don't trace this job as evaluation would result in spans which
+    # would be evaluated by this job, creating an infinite loop.
 
     # Phoenix is also our otel collector, so re-use the ENV variable
     phoenix_client = px.Client(
@@ -45,7 +44,7 @@ def main():
     query = (
         SpanQuery()
         .where(
-            "span_kind == 'LLM' and evals['QA Eval'].label is None and evals['Hallucination Eval'].label is None",
+            "span_kind == 'LLM' and evals['QA Eval'].label is None and evals['Hallucination Eval'].label is None and evals['Ocean Eval'].label is None",
         )
         .select(
             input="llm.input_messages",
@@ -58,12 +57,15 @@ def main():
         return
 
     # All spans are evaluated against the same reference
-    spans["reference"] = reference
-    qa_eval, hallucination_eval = run_evals(
+    spans["reference"] = reference  # ignored by OceanEvaluator
+    qa_eval, hallucination_eval, ocean_eval = run_evals(
         dataframe=spans,
         evaluators=[
+            # "Generic" (built-in) evaluators
             QAEvaluator(eval_model),
             HallucinationEvaluator(eval_model),
+            # "Application-specific" (from error analysis) evaluators
+            OceanEvaluator(eval_model),
         ],
         provide_explanation=True,
     )
@@ -75,6 +77,7 @@ def main():
         SpanEvaluations(
             eval_name="Hallucination Eval", dataframe=hallucination_eval
         ),
+        SpanEvaluations(eval_name="Ocean Eval", dataframe=ocean_eval),
     )
     print("Evaluations logged to Phoenix")
 

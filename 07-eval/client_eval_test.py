@@ -15,6 +15,7 @@ from phoenix.evals import (
     OpenAIModel,
     run_evals,
 )
+from ocean_evaluator import OceanEvaluator
 
 
 @pytest.mark.skipif(
@@ -22,13 +23,14 @@ from phoenix.evals import (
 )
 @pytest.mark.eval
 def test_chat_eval(traced_test):
+    # Share the same model output across all evaluators.
     actual_output = OpenAIClient().chat(message)
 
     test_case = pd.DataFrame(
         {
             "input": [message],
             "output": [actual_output],
-            "reference": ["Atlantic Ocean"],
+            "reference": ["Atlantic Ocean"],  # ignored by OceanEvaluator
         }
     )
 
@@ -38,8 +40,11 @@ def test_chat_eval(traced_test):
 
     # Define evaluators and their corresponding expected labels
     evaluators_with_labels = [
+        # "Generic" (built-in) evaluators
         (QAEvaluator(eval_model), "correct"),
         (HallucinationEvaluator(eval_model), "factual"),
+        # "Application-specific" (from error analysis) evaluators
+        (OceanEvaluator(eval_model), "correct"),
     ]
 
     # Run evaluations on the test case
@@ -59,7 +64,7 @@ def test_chat_eval(traced_test):
         if row["label"] != expected_label:
             failure_message = (
                 f"{evaluator.__class__.__name__}: label {row['label']} != {expected_label}:\n"
-                f"{textwrap.indent(row['explanation'], '\t')}"
+                f"{indent_text(row['explanation'])}"
             )
             failures.append(failure_message)
 

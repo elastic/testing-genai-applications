@@ -1,9 +1,9 @@
-# Run LLM evaluations on production requests
+# Run LLM evaluations on application requests
 
 This exercise teaches you to evaluate LLM responses for correctness and
 factuality via an LLM Eval Platform, [Arize Phoenix][phoenix].
 
-Specifically, we run evals via separate job, decoupling production requests
+Specifically, we run evals via separate job, decoupling application requests
 from their evaluation. Differences from the [previous exercise][prev] are
 highlighted below:
 
@@ -15,7 +15,7 @@ sequenceDiagram
     participant LLM as Evaluation LLM
 
     rect rgb(191, 223, 255)
-        Job ->> Client: Query for spans missing QA and Hallucination evals
+        Job ->> Client: Query for spans missing evals
         activate Client
         Client -->> Job: Return spans
         deactivate Client
@@ -39,13 +39,20 @@ sequenceDiagram
     LLM ->> Evals: record_response(explanation, hallucinated|factual)
     deactivate LLM
 
+    Note over Evals: Ocean Evaluator generates prompt
+    Evals ->> LLM: Pass ocean prompt and valid values of record_response function
+
+    activate LLM
+    LLM ->> Evals: record_response(explanation, correct|incorrect)
+    deactivate LLM
+
     Note over Evals: Evaluation results are converted to pandas DataFrames
-    Evals-->>Job: Return responses of QA and Hallucination Evaluators
+    Evals-->>Job: Return responses of all Evaluators
     deactivate Evals
 
     rect rgb(191, 223, 255)
         Note over Job: Technically, this function is "log_evaluations"
-        Job ->> Client: Annotate span with missing QA and Hallucination evals
+        Job ->> Client: Annotate span with evals
     end
 ```
 
@@ -98,7 +105,7 @@ python3 main.py
 
 You can view uploaded traces at http://localhost:6006.
 
-![span screenshot](span.png)
+![span screenshot](span.jpg)
 
 ## Log evaluations to Phoenix
 
@@ -130,7 +137,7 @@ python3 eval_job.py
 Eval results will have been uploaded to Phoenix. You can find them as
 annotations on any `ChatCompletion` span.
 
-![span with evals screenshot](span-with-eval.png)
+![span with evals screenshot](span-with-eval.jpg)
 
 ## Difference between this and eval tests
 
