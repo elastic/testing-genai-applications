@@ -36,7 +36,7 @@ sequenceDiagram
     Evals ->> LLM: Pass factuality prompt and valid values of record_response function
 
     activate LLM
-    LLM ->> Evals: record_response(explanation, hallucinated|factual)
+    LLM ->> Evals: record_response(explanation, factual|hallucinated)
     deactivate LLM
 
     Note over Evals: Ocean Evaluator generates prompt
