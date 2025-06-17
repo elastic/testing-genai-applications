@@ -1,7 +1,7 @@
-# Unit test driven evaluation of LLMs
+# Unit test driven LLM evaluation
 
 This exercise teaches you to evaluate LLM responses in unit tests, using the
-[Phoenix Evals][phoenix-evals] library in Pytest.
+[Phoenix Evals][phoenix-evals] library and Pytest.
 
 We'll use two evaluation methods:
  * **Generic** or foundation: This leverages off-the-shelf evaluators like

@@ -62,8 +62,8 @@ prerequisites before starting the exercises.
   for variability or hallucinations in the LLM's response.
 6. [Unit test your application with recorded HTTP responses](06-http-replay):
   Record traffic from the OpenAI SDK, so that you can run unit tests offline.
-7. [Unit test driven evaluation of LLMs](07-eval): Evaluate LLM responses in
-  unit tests, using the Phoenix Evals library in Pytest.
+7. [Unit test driven LLM evaluation](07-eval): Evaluate LLM responses in unit
+  tests, using the Phoenix Evals library and Pytest.
 8. [Run LLM evaluations on application requests](08-eval-platform): Use Arize
   Phoenix to evaluate LLM responses captured in OpenTelemetry traces.
 9. [Attach user feedback to application requests](09-user-feedback): Use Arize
