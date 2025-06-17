@@ -35,7 +35,7 @@ OCEAN_PROMPT_BASE_TEMPLATE = f"""{OCEAN_PROMPT_TEMPLATE_PREFIX}
 Your response must be a single word, either "correct" or "incorrect", and
 should not contain any text or characters aside from that word.
 """
-OCEAN_PROMPT_TEMPLATE_WITH_EXPLANATION  = f"""{OCEAN_PROMPT_TEMPLATE_PREFIX}
+OCEAN_PROMPT_TEMPLATE_WITH_EXPLANATION = f"""{OCEAN_PROMPT_TEMPLATE_PREFIX}
 Please read the question and answer carefully, then write out in a step by step
 manner an EXPLANATION to show how to determine if the answer is "correct" or
 "incorrect". Avoid simply stating the correct answer at the outset. Your
@@ -62,6 +62,7 @@ A template for evaluating if an answer correctly addresses a question about
 oceans. This template distinguishes between 'correct' and 'incorrect' answers
 and includes a detailed explanation template for reasoned evaluations.
 """
+
 
 class OceanEvaluator(LLMEvaluator):
     """
