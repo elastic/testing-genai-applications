@@ -142,7 +142,6 @@ Built-in evaluators are sometimes known as **Generic** evaluators. These are
 re-usable, which makes them attractive. However, failures are not necessarily
 related to business metrics, and can be confusing to interpret.
 
-Note, this is still imperfect: LLM evaluation is its own area of expertise.
 Datasets that are used to train LLMs may have historical or nuanced data. For
 example, [Southern Ocean][southern-ocean] could be considered a correct answer
 by humans who are expert at geography and the context of the question. Also, a
