@@ -24,9 +24,11 @@ services:
   eval-test:
     <<: *default-service
     container_name: eval-test
+    build:
+      context: .
+      target: test
     entrypoint: [ "dotenv",  "-f", "../.env", "run", "--no-override", "--" ]
-    # Disable rerunfailures as eval test doesn't use it and it opens ports.
-    command: [ "sh", "-c", "opentelemetry-instrument pytest -p no:rerunfailures -m eval" ]
+    command: [ "sh", "-c", "opentelemetry-instrument pytest -s -m eval" ]
 
   main:
     <<: *default-service

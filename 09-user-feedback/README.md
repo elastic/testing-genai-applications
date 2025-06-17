@@ -1,4 +1,4 @@
-# Attach user feedback to production requests
+# Attach user feedback to application requests
 
 This exercise teaches you how to incorporate human feedback on real LLM
 responses using [Arize Phoenix][phoenix].
