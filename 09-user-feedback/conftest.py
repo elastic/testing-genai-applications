@@ -19,12 +19,12 @@ def default_openai_env(monkeypatch):
 
 
 @pytest.fixture
-def default_otlp_env(monkeypatch):
+def default_phoenix_env(monkeypatch):
     """Prevent offline tests from failing due to 127.0.0.1 vs localhost."""
 
-    if "OTEL_EXPORTER_OTLP_ENDPOINT" not in os.environ:
+    if "PHOENIX_COLLECTOR_ENDPOINT" not in os.environ:
         monkeypatch.setenv(
-            "OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:6006"
+            "PHOENIX_COLLECTOR_ENDPOINT", "http://localhost:6006"
         )
 
 

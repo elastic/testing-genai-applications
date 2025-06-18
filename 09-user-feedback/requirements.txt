@@ -5,4 +5,5 @@ arize-phoenix-client
 arize-phoenix-evals
 elastic-opentelemetry
 opentelemetry-instrumentation-httpx
+openinference-instrumentation
 openinference-instrumentation-openai

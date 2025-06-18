@@ -30,10 +30,7 @@ def main():
     # Note: We don't trace this job as evaluation would result in spans which
     # would be evaluated by this job, creating an infinite loop.
 
-    # Phoenix is also our otel collector, so re-use the ENV variable
-    phoenix_client = px.Client(
-        endpoint=os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
-    )
+    phoenix_client = px.Client()
     eval_model = OpenAIModel(
         model=os.getenv("EVAL_MODEL", "o3-mini"), temperature=0.0
     )

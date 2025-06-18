@@ -224,7 +224,7 @@ Next, start this Elastic Stack in the background:
 docker compose -f docker-compose-elastic.yml up --force-recreate --wait -d
 ```
 
-If you start your Elastic stack  this way, you can access Kibana like this,
+If you start your Elastic stack this way, you can access Kibana like this,
 authenticating with the username "elastic" and password "elastic":
 
 http://localhost:5601/app/apm/traces?rangeFrom=now-15m&rangeTo=now
@@ -276,6 +276,65 @@ Or, to run on your host:
 ```bash
 brew install uv
 PHOENIX_ENABLE_AUTH=false uvx arize-phoenix serve
+```
+
+Finally, append [.env.otel.phoenix](.env.otel.phoenix) to your `.env` file like
+this:
+```bash
+cat .env.otel.phoenix >> .env
+```
+
+</details>
+
+<details>
+<summary>Local Elastic Stack with Arize Phoenix</summary>
+
+[Arize Phoenix][phoenix] is an OpenTelemetry compatible AI Observability and
+Evaluation tool. It receives traces in OpenTelemetry's OTLP format.
+
+[docker-compose-elastic-phoenix.yml](docker-compose-elastic-phoenix.yml) adds
+a second pipeline to the EDOT collector, which sends traces to Arize Phoenix:
+```yaml
+  phoenix-collector-config:
+    content: |
+      exporters:
+        otlphttp:
+          endpoint: http://phoenix:6006
+      service:
+        pipelines:
+          traces/phoenix:
+            receivers: [otlp]
+            exporters: [otlphttp]
+```
+
+What this means is that you can use both Elastic Stack and Arize Phoenix at the
+same time, with Elastic Stack receiving logs, metrics and traces, and Arize
+Phoenix only traces.
+
+
+To start a local Elastic Stack with Arize Phoenix in the background, run this:
+```bash
+docker compose -f docker-compose-elastic-phoenix.yml up --force-recreate --wait -d
+```
+
+You can access Kibana like this, authenticating with the username "elastic" and
+password "elastic":
+
+http://localhost:5601/app/apm/traces?rangeFrom=now-15m&rangeTo=now
+
+You can access Arize Phoenix like this, with authentication disabled:
+
+http://localhost:6006
+
+Clean up when finished, like this:
+```bash
+docker compose -f docker-compose-elastic-phoenix.yml down
+```
+
+Finally, append [.env.otel.elastic-phoenix](.env.otel.elastic-phoenix) to your
+`.env` file like this:
+```bash
+cat .env.otel.elastic-phoenix >> .env
 ```
 
 </details>
