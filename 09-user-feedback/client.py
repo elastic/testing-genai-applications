@@ -5,10 +5,11 @@
 import os
 from openai import OpenAI
 from openinference.instrumentation import capture_span_context
+from typing import Optional
 
 
 class ChatResponse:
-    def __init__(self, content: str, span_id: str):
+    def __init__(self, content: str, span_id: Optional[str]):
         self.content = content
         self.span_id = span_id
 

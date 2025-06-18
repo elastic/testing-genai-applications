@@ -23,7 +23,7 @@ def test_chat(default_openai_env):
     response = OpenAIClient().chat(message)
 
     assert response.content == "South Atlantic Ocean."
-    assert response.span_id == 0
+    assert response.span_id is None
 
 
 @pytest.mark.vcr

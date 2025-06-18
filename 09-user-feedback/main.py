@@ -24,7 +24,7 @@ def main():
     response = client.chat(message=message)
     print(response)
 
-    if "--feedback" in sys.argv:
+    if "--feedback" in sys.argv and response.span_id:
         while True:
             rating = input("Are you satisfied? (y/n) ").strip().lower()
             if rating in ["y", "n"]:
