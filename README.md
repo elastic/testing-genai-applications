@@ -68,6 +68,9 @@ prerequisites before starting the exercises.
   Phoenix to evaluate LLM responses captured in OpenTelemetry traces.
 9. [Attach user feedback to application requests](09-user-feedback): Use Arize
   Phoenix to attach user feedback to OpenTelemetry traces.
+10. [EDOT Collector exports to Elastic Stack and Phoenix](10-elastic-phoenix):
+  Configure Elastic Distribution of OpenTelemetry (EDOT) Collector to send
+  observability data to both Elastic Stack and Arize Phoenix.
 
 ## Prerequisites
 
@@ -282,59 +285,6 @@ Finally, append [.env.otel.phoenix](.env.otel.phoenix) to your `.env` file like
 this:
 ```bash
 cat .env.otel.phoenix >> .env
-```
-
-</details>
-
-<details>
-<summary>Local Elastic Stack with Arize Phoenix</summary>
-
-[Arize Phoenix][phoenix] is an OpenTelemetry compatible AI Observability and
-Evaluation tool. It receives traces in OpenTelemetry's OTLP format.
-
-[docker-compose-elastic-phoenix.yml](docker-compose-elastic-phoenix.yml) adds
-a second pipeline to the EDOT collector, which sends traces to Arize Phoenix:
-```yaml
-  phoenix-collector-config:
-    content: |
-      exporters:
-        otlphttp:
-          endpoint: http://phoenix:6006
-      service:
-        pipelines:
-          traces/phoenix:
-            receivers: [otlp]
-            exporters: [otlphttp]
-```
-
-What this means is that you can use both Elastic Stack and Arize Phoenix at the
-same time, with Elastic Stack receiving logs, metrics and traces, and Arize
-Phoenix only traces.
-
-
-To start a local Elastic Stack with Arize Phoenix in the background, run this:
-```bash
-docker compose -f docker-compose-elastic-phoenix.yml up --force-recreate --wait -d
-```
-
-You can access Kibana like this, authenticating with the username "elastic" and
-password "elastic":
-
-http://localhost:5601/app/apm/traces?rangeFrom=now-15m&rangeTo=now
-
-You can access Arize Phoenix like this, with authentication disabled:
-
-http://localhost:6006
-
-Clean up when finished, like this:
-```bash
-docker compose -f docker-compose-elastic-phoenix.yml down
-```
-
-Finally, append [.env.otel.elastic-phoenix](.env.otel.elastic-phoenix) to your
-`.env` file like this:
-```bash
-cat .env.otel.elastic-phoenix >> .env
 ```
 
 </details>
