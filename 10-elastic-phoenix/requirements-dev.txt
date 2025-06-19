@@ -1,0 +1,4 @@
+pytest
+python-dotenv[cli]
+pytest-rerunfailures
+pytest-vcr

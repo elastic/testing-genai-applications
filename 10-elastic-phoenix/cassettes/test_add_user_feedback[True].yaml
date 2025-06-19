@@ -1,0 +1,44 @@
+interactions:
+- request:
+    body: '{"data":[{"name":"user feedback","span_id":"00000000499602d2","annotator_kind":"HUMAN","result":{"label":"thumbs-up","score":1}}]}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '130'
+      content-type:
+      - application/json
+      host:
+      - localhost:6006
+      user-agent:
+      - python-httpx/0.28.1
+    method: POST
+    uri: http://localhost:6006/v1/span_annotations
+  response:
+    body:
+      string: '{"data":[]}'
+    headers:
+      Transfer-Encoding:
+      - chunked
+      content-length:
+      - '11'
+      content-type:
+      - application/json
+      date:
+      - Fri, 13 Jun 2025 02:04:37 GMT
+      server:
+      - uvicorn
+      vary:
+      - Accept-Encoding
+      x-colab-notebook-cache-control:
+      - no-cache
+      x-phoenix-server-version:
+      - 10.10.0
+    status:
+      code: 200
+      message: OK
+version: 1

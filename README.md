@@ -68,6 +68,9 @@ prerequisites before starting the exercises.
   Phoenix to evaluate LLM responses captured in OpenTelemetry traces.
 9. [Attach user feedback to application requests](09-user-feedback): Use Arize
   Phoenix to attach user feedback to OpenTelemetry traces.
+10. [Elastic Stack and Arize Phoenix via EDOT Collector](10-elastic-phoenix):
+  Configure Elastic Distribution of OpenTelemetry (EDOT) Collector to send
+  observability data to both Elastic Stack and Arize Phoenix.
 
 ## Prerequisites
 
@@ -224,7 +227,7 @@ Next, start this Elastic Stack in the background:
 docker compose -f docker-compose-elastic.yml up --force-recreate --wait -d
 ```
 
-If you start your Elastic stack  this way, you can access Kibana like this,
+If you start your Elastic stack this way, you can access Kibana like this,
 authenticating with the username "elastic" and password "elastic":
 
 http://localhost:5601/app/apm/traces?rangeFrom=now-15m&rangeTo=now
@@ -276,6 +279,12 @@ Or, to run on your host:
 ```bash
 brew install uv
 PHOENIX_ENABLE_AUTH=false uvx arize-phoenix serve
+```
+
+Finally, append [.env.otel.phoenix](.env.otel.phoenix) to your `.env` file like
+this:
+```bash
+cat .env.otel.phoenix >> .env
 ```
 
 </details>

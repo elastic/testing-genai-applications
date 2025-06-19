@@ -107,20 +107,21 @@ As noted in Arize's [capture feedback documentation][feedback-doc], the key
 challenge is to attach user feedback to the correct OpenTelemetry span: A real
 application trace often has spans unrelated to LLMs (like database queries).
 
-The OpenAI Python SDK lacks a callback API to capture OpenTelemetry span IDs
-during requests. To work around this, we monkey patch a function called
-internally by the OpenAI Python SDK when doing a chat completion request.
-This ensures feedback is connected to the `ChatCompletion` span, vs its parent
-or its child.
+To get the correct span, we use the `capture_span_context` context manager,
+included in the [openinference-instrumentation][openinference-instrumentation]
+package.
 
 The critical code related to this is in [client.py](client.py):
 
 ```python
-# build_request is called inside chat.completions, before the real HTTP request
-def span_id_capturing_build_request(self, *args, **kwargs):
-    ctx = trace.get_current_span().get_span_context()
-    span_id_var.set(ctx.span_id)
-    return original_build_request(self, *args, **kwargs)
+with capture_span_context() as capture:
+    response = self.client.chat.completions.create(
+        model=self.model,
+        messages=messages,
+        temperature=0,
+    )
+    content = response.choices[0].message.content
+    return ChatResponse(content, capture.get_last_span_id())
 ```
 
 ## Offline unit tests
@@ -133,6 +134,7 @@ as we did in [exercise 6](../06-http-replay), VCR tests.
 ---
 [prev]: ../08-eval-platform
 [openinference]: https://github.com/Arize-ai/openinference
+[openinference-instrumentation]: https://github.com/Arize-ai/openinference/tree/main/python/openinference-instrumentation
 [phoenix]: https://phoenix.arize.com/
 [feedback-doc]: https://arize.com/docs/phoenix/tracing/how-to-tracing/feedback-and-annotations/capture-feedback
 
