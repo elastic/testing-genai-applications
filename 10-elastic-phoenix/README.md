@@ -1,4 +1,4 @@
-# EDOT Collector exports to Elastic Stack and Phoenix
+# Elastic Stack and Phoenix via EDOT Collector
 
 This exercise teaches you how to use the Elastic Distribution of OpenTelemetry
 [(EDOT) collector][edot-collector] to send observability data (signals) to both

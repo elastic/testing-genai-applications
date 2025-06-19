@@ -68,7 +68,7 @@ prerequisites before starting the exercises.
   Phoenix to evaluate LLM responses captured in OpenTelemetry traces.
 9. [Attach user feedback to application requests](09-user-feedback): Use Arize
   Phoenix to attach user feedback to OpenTelemetry traces.
-10. [EDOT Collector exports to Elastic Stack and Phoenix](10-elastic-phoenix):
+10. [Elastic Stack and Phoenix via EDOT Collector](10-elastic-phoenix):
   Configure Elastic Distribution of OpenTelemetry (EDOT) Collector to send
   observability data to both Elastic Stack and Arize Phoenix.
 
